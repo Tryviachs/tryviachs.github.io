@@ -1775,15 +1775,21 @@ function getViewList(){
     }
     return aggregatedMonth;
   } else {
-    // "Todos" selected -> aggregate per client across all months, then apply status filter on the aggregated CHS
-    let aggregated = aggregateByName(base);
+    // "Todos" -> para cada cliente, mostrar a nota do ÚLTIMO mês disponível (consistente com o delta mostrado)
+    const names = Array.from(new Set((base||[]).map(c=>c.nome)));
+    let out = names.map(name => {
+      const monthsForClient = Array.from(new Set((clientes||[])
+        .filter(r => r.nome === name && r.dataFmt)
+        .map(r => normalizeYYYYMM(r.dataFmt)))).sort();
+      const len = monthsForClient.length;
+      const lastMonth = len ? monthsForClient[len - 1] : null;
+      const chsLast = lastMonth ? getCHSForClientInMonth(name, lastMonth) : null;
+      return { nome: name, chs: (typeof chsLast === 'number' ? chsLast : 0) };
+    }).filter(it => typeof it.chs === 'number');
     if(statusFilter && statusFilter !== 'all') {
-      aggregated = aggregated.filter(c => {
-        const st = getStatusCHS(c.chs).cls;
-        return st === statusFilter;
-      });
+      out = out.filter(c => getStatusCHS(c.chs).cls === statusFilter);
     }
-    return aggregated;
+    return out;
   }
 }
 
@@ -1916,7 +1922,7 @@ function getCHSForClientInMonth(name, month){
   const rows = (clientes || []).filter(c => c.nome === name && normalizeYYYYMM(c.dataFmt) === target);
   if(rows.length === 0) return null;
   const avg = Math.round(rows.reduce((s,r)=> s + (Number(r.chs)||0), 0) / rows.length);
-  return avg;
+  return Math.max(0, Math.min(100, avg));
 }
 
 /* Rendering functions for rankings, charts, table, client modal etc. */
@@ -2964,8 +2970,9 @@ function getAggregatedClientDataByNameAndMonth(name, mes) {
         agg.agente = agg.agente && agg.agente.toString().trim() ? agg.agente : (nearest.agente || agg.agente);
       }
     }
-    // Recalculate CHS from these averaged components so modal shows component-based breakdown for a month
-    agg.chs = calcSLA(agg) + calcNPS(agg, agg.nps) + calcNeg(agg) + calcCS(agg, agg.cs);
+    // For modal consistency with rankings in month view, use mean of per-record CHS for the selected month
+    const chsMean = Math.round(rows.reduce((s,r)=> s + (Number(r.chs)||0),0)/cnt);
+    agg.chs = Math.max(0, Math.min(100, chsMean));
     return agg;
   } else {
     // mes === 'all' -> use same aggregation as main page (mean of per-record chs)
