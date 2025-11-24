@@ -4712,24 +4712,41 @@ document.addEventListener('DOMContentLoaded', function() {
 .btn-primary{background:var(--tryvia-dark2);color:#fff;border-color:var(--tryvia-dark2)}
 .btn-secondary{background:var(--tryvia-white);color:var(--tryvia-dark2)}
 .count-hint{opacity:.8;font-size:.9em}
+ #chartsFullscreenOverlay .fs-item{display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;background:var(--tryvia-white);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+ #chartsFullscreenOverlay .fs-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--tryvia-dark2);color:#fff;font-weight:700}
+ #chartsFullscreenOverlay .fs-title{font-size:0.95rem}
+ #chartsFullscreenOverlay .fs-body{flex:1;display:flex;align-items:center;justify-content:center;background:var(--tryvia-white);padding:8px;overflow:auto}
       `;
       document.head.appendChild(s);
     }
     function enumerateCharts(){
+      const items=[];
+      // 1) Real charts (canvas)
       const canvases = Array.from(document.querySelectorAll('canvas'));
-      const items=[]; const seen=new Set();
-      canvases.forEach((cv)=>{
-        let inst=null;
-        try{ if(window.Chart && Chart.getChart) inst = Chart.getChart(cv); }catch(e){}
-        if(!inst && cv._chart) inst = cv._chart;
-        if(!inst) return;
-        let card = cv.closest('.dash-card') || cv.closest('.card') || cv.closest('.box') || cv.closest('.chart') || cv.closest('.chart-card') || cv.parentElement;
-        if(!card || seen.has(card)) return;
-        seen.add(card);
-        const titleEl = card.querySelector('h3, h4, .title, .card-title, .box-title');
-        const title = titleEl ? (titleEl.textContent||'').trim() : `Gráfico ${items.length+1}`;
-        const id = `chart_${items.length+1}`;
-        items.push({id, title, node: card});
+      const seenCanvas=new Set();
+      canvases.forEach((cv, idx)=>{
+        if(seenCanvas.has(cv)) return;
+        seenCanvas.add(cv);
+        const card = cv.closest('.dash-card') || cv.closest('.card') || cv.closest('.box') || cv.closest('.chart-card') || cv.closest('.chart') || cv.parentElement;
+        const titleEl = (card && card.querySelector('h3, h4, .title, .card-title, .box-title')) || cv.closest('[data-title]') || null;
+        let title = titleEl ? (titleEl.textContent || (titleEl.getAttribute && titleEl.getAttribute('data-title')) || '').trim() : '';
+        if(!title) title = cv.getAttribute('aria-label') || cv.getAttribute('data-name') || `Gráfico ${items.length+1}`;
+        const id = (cv.id && cv.id.trim()) ? cv.id.trim() : `canvas_${idx+1}`;
+        items.push({id, title, canvas: cv, kind: 'canvas', card});
+      });
+      // 2) Ranking panels
+      const rankingCandidates = [
+        { id: 'rankingGeral', fallback: 'Ranking Geral' },
+        { id: 'rankingMelhores', fallback: 'Ranking Melhores' },
+        { id: 'rankingPiores', fallback: 'Ranking Piores' },
+      ];
+      rankingCandidates.forEach(rc=>{
+        const el = document.getElementById(rc.id);
+        if(!el) return;
+        const tEl = el.querySelector('h3, h4, .title, .card-title, .box-title');
+        const title = (tEl && (tEl.textContent||'').trim()) || rc.fallback;
+        const pid = `panel_${rc.id}`;
+        items.push({id: pid, title, panel: el, kind: 'panel'});
       });
       return items;
     }
@@ -4802,19 +4819,41 @@ document.addEventListener('DOMContentLoaded', function() {
       ensureOverlay();
       const ids=Array.from(state.selected);
       const map=new Map(state.registry.map(r=>[r.id,r]));
-      const selNodes = ids.map(id=>map.get(id)).filter(Boolean).map(it=>it.node);
+      const selItems = ids.map(id=>map.get(id)).filter(Boolean);
       const grid=document.getElementById('chartsFSGrid');
       const ov=document.getElementById('chartsFullscreenOverlay');
       if(!grid||!ov) return;
       state.moved=[];
-      layoutFor(selNodes.length, grid);
-      selNodes.forEach(node=>{
-        const parent=node.parentNode;
-        const next=node.nextSibling;
-        state.moved.push({node,parent,next});
-        grid.appendChild(node);
+      layoutFor(selItems.length, grid);
+      grid.innerHTML='';
+      selItems.forEach(it=>{
+        const movingNode = it.canvas || it.panel;
+        if(!movingNode) return;
+        const parent=movingNode.parentNode;
+        const next=movingNode.nextSibling;
+        const prevStyle = movingNode.getAttribute('style');
+        state.moved.push({node: movingNode, parent, next, prevStyle});
+        const wrap=document.createElement('div');
+        wrap.className='fs-item';
+        const head=document.createElement('div');
+        head.className='fs-head';
+        const titleEl=document.createElement('div');
+        titleEl.className='fs-title';
+        titleEl.textContent = it.title;
+        head.appendChild(titleEl);
+        const body=document.createElement('div');
+        body.className='fs-body';
+        wrap.appendChild(head);
+        wrap.appendChild(body);
+        grid.appendChild(wrap);
+        body.appendChild(movingNode);
+        try{
+          movingNode.style.width='100%';
+          movingNode.style.height='100%';
+        }catch(e){}
       });
       ov.style.display='block';
+      try{ lockBodyScroll && lockBodyScroll(); }catch(e){}
       try{ window.dispatchEvent(new Event('resize')); }catch(e){}
     }
     function exitFullscreen(){
@@ -4822,12 +4861,19 @@ document.addEventListener('DOMContentLoaded', function() {
       const grid=document.getElementById('chartsFSGrid');
       if(!ov||!grid) return;
       state.moved.forEach(rec=>{
-        if(rec.next && rec.next.parentNode===rec.parent) rec.parent.insertBefore(rec.node, rec.next);
-        else rec.parent.appendChild(rec.node);
+        const node = rec.node;
+        if(!node) return;
+        if(rec.next && rec.next.parentNode===rec.parent) rec.parent.insertBefore(node, rec.next);
+        else rec.parent.appendChild(node);
+        try{
+          if(rec.prevStyle != null) node.setAttribute('style', rec.prevStyle);
+          else node.removeAttribute('style');
+        }catch(e){}
       });
       state.moved=[];
       ov.style.display='none';
       grid.innerHTML='';
+      try{ unlockBodyScroll && unlockBodyScroll(); }catch(e){}
       try{ window.dispatchEvent(new Event('resize')); }catch(e){}
     }
     function insertButton(){
@@ -4838,10 +4884,13 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.type='button';
       btn.textContent='Selecionar Gráficos';
       btn.addEventListener('click', openModal);
-      const pref = document.getElementById('rankingFiltersWrap') || document.getElementById('indicatorFiltersWrap') || document.getElementById('searchWrap');
-      let target = null;
-      if(pref){ target = pref.parentElement || pref; } else { target = document.getElementById('header') || document.body; }
-      try{ target.appendChild(btn); }catch(e){ document.body.appendChild(btn); }
+      const searchWrap = document.getElementById('searchWrap');
+      if(searchWrap){
+        searchWrap.appendChild(btn);
+      } else {
+        const header = document.getElementById('header') || document.body;
+        header.appendChild(btn);
+      }
     }
     function onOk(){
       if(state.selected.size===0) return closeModal();
@@ -4854,6 +4903,12 @@ document.addEventListener('DOMContentLoaded', function() {
       ensureModal();
       ensureOverlay();
       insertButton();
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape'){
+          const ov=document.getElementById('chartsFullscreenOverlay');
+          if(ov && ov.style.display==='block') exitFullscreen();
+        }
+      });
     }
     init();
   })();
