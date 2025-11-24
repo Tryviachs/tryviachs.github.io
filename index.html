@@ -1659,6 +1659,8 @@ function toNumberSafe(val){
   const n = parseFloat(s);
   return isNaN(n) ? NaN : n;
 }
+function parseCsvLine(line){
+  const out=[]; let cur=""; let inQ=false; for(let i=0;i<line.length;i++){ const ch=line[i]; if(inQ){ if(ch==='"'){ if(line[i+1]==='"'){ cur+='"'; i++; } else { inQ=false; } } else { cur+=ch; } } else { if(ch==='"'){ inQ=true; } else if(ch===','){ out.push(cur.trim()); cur=''; } else { cur+=ch; } } } out.push(cur.trim()); return out; }
 // Função para carregar dados automaticamente
 function carregarDoGoogleSheets() {
   try{ console.log("Carregando dados do Google Sheets..."); }catch(e){}
@@ -1684,12 +1686,9 @@ function processarCSV(texto) {
     }
 
     for (let i = inicio; i < linhas.length; i++) {
-      // Regex inteligente para separar por vírgula mas respeitar aspas (ex: "Silva, Joao")
-      let colunas = linhas[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-      if (!colunas) colunas = linhas[i].split(',');
-      
-      // Remove aspas extras que o Google coloca
-      colunas = colunas.map(c => c ? c.replace(/^"|"$/g, '').trim() : "");
+      let colunas = parseCsvLine(linhas[i]);
+      if (!colunas) colunas = [];
+      colunas = colunas.map(c => c != null ? String(c).trim() : "");
 
       if (colunas.length < 5) continue;
 
@@ -1765,15 +1764,16 @@ function getViewList(){
   if(selectedClients && selectedClients.size > 0) base = base.filter(c => selectedClients.has(c.nome));
 
   if(currentMes && currentMes !== 'all') {
-    // month-specific view: use individual records from that month only
-    let view = base.filter(c => c.dataFmt === currentMes);
+    // month-specific view: aggregate per client for that month to keep consistency across rankings
+    const rows = base.filter(c => c.dataFmt === currentMes);
+    let aggregatedMonth = aggregateByName(rows);
     if(statusFilter && statusFilter !== 'all') {
-      view = view.filter(c => {
+      aggregatedMonth = aggregatedMonth.filter(c => {
         const st = getStatusCHS(c.chs).cls;
         return st === statusFilter;
       });
     }
-    return view;
+    return aggregatedMonth;
   } else {
     // "Todos" selected -> aggregate per client across all months, then apply status filter on the aggregated CHS
     let aggregated = aggregateByName(base);
@@ -2734,8 +2734,9 @@ function renderRankingGeral(){
       // para "Todos": usar mês anterior disponível do próprio cliente, não o anterior de calendário
       prevMonth = len >= 2 ? monthsForClient[len - 2] : null;
     }
-
-    const chsTarget = targetMonth ? getCHSForClientInMonth(item.nome, targetMonth) : null;
+    // Use the same CHS shown in the list for the target month to keep delta consistent
+    const chsTarget = (currentMes && currentMes !== 'all') ? (typeof item.chs === 'number' ? item.chs : null)
+                       : (targetMonth ? getCHSForClientInMonth(item.nome, targetMonth) : null);
     const chsPrev = prevMonth ? getCHSForClientInMonth(item.nome, prevMonth) : null;
     let diff = null;
     if(typeof chsTarget === 'number' && typeof chsPrev === 'number') diff = Math.round(chsTarget - chsPrev);
