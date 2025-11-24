@@ -4689,6 +4689,174 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Attach autocomplete handlers
   attachSearchHandlers();
+  (function(){
+    const maxSel = 4;
+    const state = { registry: [], selected: new Set(), moved: [] };
+    function injectStyles(){
+      if(document.getElementById('chartsSelectStyles')) return;
+      const s=document.createElement('style');
+      s.id='chartsSelectStyles';
+      s.textContent = `
+#chartsSelectModal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:10000}
+#chartsSelectModal .modal{background:var(--tryvia-white);color:var(--tryvia-dark2);border-radius:12px;min-width:min(92vw,720px);max-width:92vw;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+#chartsSelectModal .m-head{padding:12px 16px;font-weight:700;border-bottom:1px solid var(--tryvia-dark2)}
+#chartsSelectModal .m-body{padding:12px 16px;overflow:auto}
+#chartsSelectModal .m-foot{padding:12px 16px;border-top:1px solid var(--tryvia-dark2);display:flex;gap:12px;justify-content:space-between;align-items:center}
+#chartsSelectModal .list{display:grid;gap:10px}
+#chartsSelectModal .list label{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid rgba(0,0,0,.08);border-radius:10px}
+#chartsFullscreenOverlay{position:fixed;inset:0;display:none;background:var(--tryvia-bg,#0f1115);z-index:10000}
+#chartsFullscreenOverlay .fs-close{position:absolute;top:12px;right:12px;z-index:10001;padding:8px 10px;background:var(--tryvia-white);border:1px solid var(--tryvia-dark2);border-radius:10px;cursor:pointer;font-weight:600}
+#chartsFullscreenOverlay .grid{position:absolute;inset:0;padding:16px;display:grid;gap:16px}
+#chartsFullscreenOverlay .grid > *{background:var(--tryvia-white);border-radius:12px;overflow:hidden}
+.btn-sel-charts{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--tryvia-white);border:1px solid var(--tryvia-dark2);border-radius:10px;color:var(--tryvia-dark2);font-weight:600;cursor:pointer}
+.btn-primary{background:var(--tryvia-dark2);color:#fff;border-color:var(--tryvia-dark2)}
+.btn-secondary{background:var(--tryvia-white);color:var(--tryvia-dark2)}
+.count-hint{opacity:.8;font-size:.9em}
+      `;
+      document.head.appendChild(s);
+    }
+    function enumerateCharts(){
+      const canvases = Array.from(document.querySelectorAll('canvas'));
+      const items=[]; const seen=new Set();
+      canvases.forEach((cv)=>{
+        let inst=null;
+        try{ if(window.Chart && Chart.getChart) inst = Chart.getChart(cv); }catch(e){}
+        if(!inst && cv._chart) inst = cv._chart;
+        if(!inst) return;
+        let card = cv.closest('.dash-card') || cv.closest('.card') || cv.closest('.box') || cv.closest('.chart') || cv.closest('.chart-card') || cv.parentElement;
+        if(!card || seen.has(card)) return;
+        seen.add(card);
+        const titleEl = card.querySelector('h3, h4, .title, .card-title, .box-title');
+        const title = titleEl ? (titleEl.textContent||'').trim() : `Gráfico ${items.length+1}`;
+        const id = `chart_${items.length+1}`;
+        items.push({id, title, node: card});
+      });
+      return items;
+    }
+    function ensureModal(){
+      if(document.getElementById('chartsSelectModal')) return;
+      const wrap=document.createElement('div');
+      wrap.id='chartsSelectModal';
+      wrap.innerHTML = '<div class="modal"><div class="m-head">Selecionar Gráficos</div><div class="m-body"><div class="list" id="chartsSelectList"></div></div><div class="m-foot"><div class="count-hint" id="chartsSelectCount">0/4</div><div style="display:flex;gap:10px"><button type="button" class="btn-secondary" id="chartsSelectCancel">Cancelar</button><button type="button" class="btn-primary" id="chartsSelectOk">OK</button></div></div></div>';
+      document.body.appendChild(wrap);
+      wrap.addEventListener('click', (e)=>{ if(e.target===wrap) closeModal(); });
+      document.getElementById('chartsSelectCancel').addEventListener('click', closeModal);
+      document.getElementById('chartsSelectOk').addEventListener('click', onOk);
+    }
+    function renderList(){
+      const list=document.getElementById('chartsSelectList');
+      const countEl=document.getElementById('chartsSelectCount');
+      if(!list||!countEl) return;
+      list.innerHTML='';
+      state.registry.forEach((it)=>{
+        const id = `chk_${it.id}`;
+        const row=document.createElement('label');
+        row.innerHTML = `<input type="checkbox" id="${id}" data-id="${it.id}" /> <span>${it.title}</span>`;
+        const cb = row.querySelector('input');
+        cb.addEventListener('change', onCheckChange);
+        list.appendChild(row);
+      });
+      updateCount();
+    }
+    function onCheckChange(e){
+      const id=e.target.getAttribute('data-id');
+      if(e.target.checked) state.selected.add(id); else state.selected.delete(id);
+      const list=document.getElementById('chartsSelectList');
+      if(list){
+        const boxes=Array.from(list.querySelectorAll('input[type="checkbox"]'));
+        const disable = state.selected.size>=maxSel;
+        boxes.forEach(cb=>{ if(!cb.checked) cb.disabled = disable; });
+      }
+      updateCount();
+    }
+    function updateCount(){
+      const countEl=document.getElementById('chartsSelectCount');
+      if(countEl) countEl.textContent = state.selected.size + '/' + 4;
+    }
+    function openModal(){
+      state.registry = enumerateCharts();
+      state.selected.clear();
+      ensureModal();
+      renderList();
+      const wrap=document.getElementById('chartsSelectModal');
+      if(wrap) wrap.style.display='flex';
+    }
+    function closeModal(){
+      const wrap=document.getElementById('chartsSelectModal');
+      if(wrap) wrap.style.display='none';
+    }
+    function ensureOverlay(){
+      if(document.getElementById('chartsFullscreenOverlay')) return;
+      const ov=document.createElement('div');
+      ov.id='chartsFullscreenOverlay';
+      ov.innerHTML = '<button class="fs-close" id="chartsFSExit">Fechar</button><div class="grid" id="chartsFSGrid"></div>';
+      document.body.appendChild(ov);
+      ov.querySelector('#chartsFSExit').addEventListener('click', exitFullscreen);
+    }
+    function layoutFor(n, grid){
+      if(n<=1){ grid.style.gridTemplateColumns='1fr'; grid.style.gridTemplateRows='1fr'; }
+      else if(n===2){ grid.style.gridTemplateColumns='1fr 1fr'; grid.style.gridTemplateRows='1fr'; }
+      else { grid.style.gridTemplateColumns='1fr 1fr'; grid.style.gridTemplateRows='1fr 1fr'; }
+    }
+    function enterFullscreen(){
+      ensureOverlay();
+      const ids=Array.from(state.selected);
+      const map=new Map(state.registry.map(r=>[r.id,r]));
+      const selNodes = ids.map(id=>map.get(id)).filter(Boolean).map(it=>it.node);
+      const grid=document.getElementById('chartsFSGrid');
+      const ov=document.getElementById('chartsFullscreenOverlay');
+      if(!grid||!ov) return;
+      state.moved=[];
+      layoutFor(selNodes.length, grid);
+      selNodes.forEach(node=>{
+        const parent=node.parentNode;
+        const next=node.nextSibling;
+        state.moved.push({node,parent,next});
+        grid.appendChild(node);
+      });
+      ov.style.display='block';
+      try{ window.dispatchEvent(new Event('resize')); }catch(e){}
+    }
+    function exitFullscreen(){
+      const ov=document.getElementById('chartsFullscreenOverlay');
+      const grid=document.getElementById('chartsFSGrid');
+      if(!ov||!grid) return;
+      state.moved.forEach(rec=>{
+        if(rec.next && rec.next.parentNode===rec.parent) rec.parent.insertBefore(rec.node, rec.next);
+        else rec.parent.appendChild(rec.node);
+      });
+      state.moved=[];
+      ov.style.display='none';
+      grid.innerHTML='';
+      try{ window.dispatchEvent(new Event('resize')); }catch(e){}
+    }
+    function insertButton(){
+      if(document.getElementById('btnSelecionarGraficos')) return;
+      const btn=document.createElement('button');
+      btn.id='btnSelecionarGraficos';
+      btn.className='btn-sel-charts';
+      btn.type='button';
+      btn.textContent='Selecionar Gráficos';
+      btn.addEventListener('click', openModal);
+      const pref = document.getElementById('rankingFiltersWrap') || document.getElementById('indicatorFiltersWrap') || document.getElementById('searchWrap');
+      let target = null;
+      if(pref){ target = pref.parentElement || pref; } else { target = document.getElementById('header') || document.body; }
+      try{ target.appendChild(btn); }catch(e){ document.body.appendChild(btn); }
+    }
+    function onOk(){
+      if(state.selected.size===0) return closeModal();
+      if(state.selected.size>4) return;
+      closeModal();
+      enterFullscreen();
+    }
+    function init(){
+      injectStyles();
+      ensureModal();
+      ensureOverlay();
+      insertButton();
+    }
+    init();
+  })();
 
   // Close filters menu on outside click and ESC
   document.addEventListener('click', function(e){
