@@ -1267,10 +1267,13 @@ const MAX_CS  = 20;
 
 /* Calculation helpers */
 function calcSLA(cli){
-  let sla1ok=Number(cli.sla1ok),sla1off=Number(cli.sla1off),sla2ok=Number(cli.sla2ok),sla2off=Number(cli.sla2off);
-  if((isNaN(sla1ok)||isNaN(sla1off)||isNaN(sla2ok)||isNaN(sla2off))||(sla1ok+sla1off===0)||(sla2ok+sla2off===0)) return 0;
-  let pct1=sla1ok/(sla1ok+sla1off),pct2=sla2ok/(sla2ok+sla2off),slaMedia=(pct1+pct2)/2;
-  if(slaMedia>=1)return 20; if(slaMedia>=0.9)return 15; if(slaMedia>=0.8)return 10; if(slaMedia>=0.7)return 5; return 0;
+  let t1=Number(cli.sla1ok)||0,f1=Number(cli.sla1off)||0,t2=Number(cli.sla2ok)||0,f2=Number(cli.sla2off)||0;
+  const parts=[];
+  if((t1+f1)>0) parts.push(t1/(t1+f1));
+  if((t2+f2)>0) parts.push(t2/(t2+f2));
+  if(parts.length===0) return 0;
+  const slaMedia = parts.reduce((a,b)=>a+b,0)/parts.length;
+  if(slaMedia>=1) return 20; if(slaMedia>=0.9) return 15; if(slaMedia>=0.8) return 10; if(slaMedia>=0.7) return 5; return 0;
 }
 function calcNPS(cli,mediaNps=6){ let nps=cli.nps; if(nps===null||nps===""||isNaN(Number(nps))) nps=mediaNps; nps=Math.round(Number(nps)); if(nps>=9) return 30; if(nps===8) return 22; if(nps===7) return 14; if(nps===6) return 7; if(nps===5) return 2; return 0; }
 function calcNeg(cli){ let neg=Number(cli.neg); if(isNaN(neg)) return 0; neg=Math.round(neg); if(neg===0) return 30; if(neg===1) return 15; if(neg===2) return 5; if(neg>=3) return 0; return 0; }
@@ -1656,14 +1659,18 @@ function toNumberSafe(val){
 function parseCsvLine(line){
   const out=[]; let cur=""; let inQ=false; for(let i=0;i<line.length;i++){ const ch=line[i]; if(inQ){ if(ch==='"'){ if(line[i+1]==='"'){ cur+='"'; i++; } else { inQ=false; } } else { cur+=ch; } } else { if(ch==='"'){ inQ=true; } else if(ch===','){ out.push(cur.trim()); cur=''; } else { cur+=ch; } } } out.push(cur.trim()); return out; }
 function detectCsvDelim(sample){
-  const s = String(sample||'');
-  const count = (ch)=> (s.match(new RegExp(ch,'g'))||[]).length;
-  const commas = count(',');
-  const semis = count(';');
-  const tabs = (s.match(/\t/g)||[]).length;
-  if(semis > commas && semis >= tabs) return ';';
-  if(tabs > commas && tabs >= semis) return '\t';
-  return ',';
+  const lines = Array.isArray(sample) ? sample.slice(0, 20) : [String(sample||'')];
+  const cands = [',',';','\t'];
+  let best = ',', bestScore = -1;
+  for(const d of cands){
+    let counts = lines.map(l => parseCsvLineWithDelim(l, d).length);
+    const uniq = new Set(counts).size;
+    const good = counts.filter(n => n >= 6 && n <= 50).length;
+    const mean = counts.reduce((a,b)=>a+b,0) / (counts.length || 1);
+    const score = good*100 - uniq*10 + mean; // prefer consistent, reasonable column counts
+    if(score > bestScore){ bestScore = score; best = d; }
+  }
+  return best;
 }
 function parseCsvLineWithDelim(line, delim){
   const out=[]; let cur=""; let inQ=false; const d = delim || ',';
@@ -1701,7 +1708,7 @@ function processarCSV(texto) {
     let linhas = (texto||'').split(/\r?\n/).filter(l => l.trim());
     let importados = [];
     if(linhas.length === 0) throw new Error('CSV vazio');
-    const delim = detectCsvDelim(linhas[0]||'');
+    const delim = detectCsvDelim(linhas.slice(0, Math.min(20, linhas.length)));
 
     // Helpers
     const toNum = (v)=> toNumberSafe(v);
@@ -1747,31 +1754,44 @@ function processarCSV(texto) {
       const inicio = hasHeader ? 1 : 0;
       for (let i = inicio; i < linhas.length; i++) {
         let colunas = parseCsvLineWithDelim(linhas[i], delim); if (!colunas) continue; colunas = colunas.map(c => c != null ? String(c).trim() : ""); if (colunas.length === 0) continue;
-        const nome  = hasHeader ? (idxNome>=0 ? colunas[idxNome] : '') : (colunas[0]||'');
-        const data  = hasHeader ? (idxData>=0 ? colunas[idxData] : '') : (colunas[1]||'');
-        const cs    = hasHeader ? (idxCS>=0   ? colunas[idxCS]   : '') : (colunas[2]||'');
-        const nps   = hasHeader ? (idxNPS>=0  ? colunas[idxNPS]  : '') : (colunas[3]||'');
-        const neg   = hasHeader ? (idxNEG>=0  ? colunas[idxNEG]  : '') : (colunas[4]||'');
-        const sla1ok  = hasHeader ? (idxS1ok>=0 ? colunas[idxS1ok] : '') : (colunas[5]||'');
-        const sla1off = hasHeader ? (idxS1off>=0? colunas[idxS1off]: '') : (colunas[6]||'');
-        const sla2ok  = hasHeader ? (idxS2ok>=0 ? colunas[idxS2ok] : '') : (colunas[7]||'');
-        const sla2off = hasHeader ? (idxS2off>=0? colunas[idxS2off]: '') : (colunas[8]||'');
-        const gestor  = hasHeader ? (idxGestor>=0? colunas[idxGestor]: '') : (colunas[9]||'');
-        const celular = hasHeader ? (idxCel>=0   ? colunas[idxCel]   : '') : (colunas[10]||'');
-        const agente  = hasHeader ? (idxAgente>=0? colunas[idxAgente]: '') : (colunas[11]||'');
+        const nome    = (idxNome>=0   ? colunas[idxNome]   : (colunas[0] || ''));
+        const data    = (idxData>=0   ? colunas[idxData]   : (colunas[1] || ''));
+        const csRaw   = (idxCS>=0     ? colunas[idxCS]     : (colunas[2] || ''));
+        const npsRaw  = (idxNPS>=0    ? colunas[idxNPS]    : (colunas[3] || ''));
+        const negRaw  = (idxNEG>=0    ? colunas[idxNEG]    : (colunas[4] || ''));
+        const sla1okR = (idxS1ok>=0   ? colunas[idxS1ok]   : (colunas[5] || ''));
+        const sla1offR= (idxS1off>=0  ? colunas[idxS1off]  : (colunas[6] || ''));
+        const sla2okR = (idxS2ok>=0   ? colunas[idxS2ok]   : (colunas[7] || ''));
+        const sla2offR= (idxS2off>=0  ? colunas[idxS2off]  : (colunas[8] || ''));
+        const gestor  = (idxGestor>=0 ? colunas[idxGestor] : (colunas[9] || ''));
+        const celular = (idxCel>=0    ? colunas[idxCel]    : (colunas[10] || ''));
+        const agente  = (idxAgente>=0 ? colunas[idxAgente] : (colunas[11] || ''));
         if (!nome) continue;
         const dataFmt = normalizeYYYYMM(data); if(!data || !dataFmt) continue;
-        out.push({ nome, data, dataFmt, cs: toNum(cs), nps: toNum(nps), neg: toNum(neg), sla1ok: Number(sla1ok||0), sla1off: Number(sla1off||0), sla2ok: Number(sla2ok||0), sla2off: Number(sla2off||0), gestor: gestor||"", celular: celular||"", agente: agente||"" });
+        const cs = toNum(csRaw), nps = toNum(npsRaw), neg = toNum(negRaw);
+        const sla1ok = Number(sla1okR||0), sla1off = Number(sla1offR||0), sla2ok = Number(sla2okR||0), sla2off = Number(sla2offR||0);
+        const hasAny = (!isNaN(cs) || !isNaN(nps) || !isNaN(neg) || (sla1ok+sla1off+sla2ok+sla2off)>0);
+        if(!hasAny) continue;
+        out.push({ nome, data, dataFmt, cs, nps, neg, sla1ok, sla1off, sla2ok, sla2off, gestor: gestor||"", celular: celular||"", agente: agente||"" });
       }
       return out;
     };
     const byPosition = ()=>{
       const out=[]; const inicio= (/(cliente|nome)/i.test(linhas[0]||'')) ? 1 : 0;
       for (let i=inicio;i<linhas.length;i++){
-        let colunas = parseCsvLineWithDelim(linhas[i], delim); if(!colunas) continue; colunas = colunas.map(c=>c!=null?String(c).trim():""); if(colunas.length<2) continue;
-        const [nome,data,cs,nps,neg,sla1ok,sla1off,sla2ok,sla2off,gestor,celular,agente] = colunas;
-        if(!nome) continue; const dataFmt=normalizeYYYYMM(data); if(!data||!dataFmt) continue;
-        out.push({ nome, data, dataFmt, cs: toNum(cs), nps: toNum(nps), neg: toNum(neg), sla1ok: Number(sla1ok||0), sla1off: Number(sla1off||0), sla2ok: Number(sla2ok||0), sla2off: Number(sla2off||0), gestor: gestor||"", celular: celular||"", agente: agente||"" });
+        let colunas = parseCsvLineWithDelim(linhas[i], delim);
+        if(!colunas) continue;
+        colunas = colunas.map(c=>c!=null?String(c).trim():"");
+        if(colunas.length<2) continue;
+        const [nome,data,csRaw,npsRaw,negRaw,sla1okR,sla1offR,sla2okR,sla2offR,gestor,celular,agente] = colunas;
+        if(!nome) continue;
+        const dataFmt=normalizeYYYYMM(data);
+        if(!data||!dataFmt) continue;
+        const cs = toNum(csRaw), nps = toNum(npsRaw), neg = toNum(negRaw);
+        const sla1ok = Number(sla1okR||0), sla1off = Number(sla1offR||0), sla2ok = Number(sla2okR||0), sla2off = Number(sla2offR||0);
+        const hasAny = (!isNaN(cs) || !isNaN(nps) || !isNaN(neg) || (sla1ok+sla1off+sla2ok+sla2off)>0);
+        if(!hasAny) continue;
+        out.push({ nome, data, dataFmt, cs, nps, neg, sla1ok, sla1off, sla2ok, sla2off, gestor: gestor||"", celular: celular||"", agente: agente||"" });
       }
       return out;
     };
