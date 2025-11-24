@@ -4704,9 +4704,9 @@ document.addEventListener('DOMContentLoaded', function() {
 #chartsSelectModal .m-foot{padding:12px 16px;border-top:1px solid var(--tryvia-dark2);display:flex;gap:12px;justify-content:space-between;align-items:center}
 #chartsSelectModal .list{display:grid;gap:10px}
 #chartsSelectModal .list label{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid rgba(0,0,0,.08);border-radius:10px}
-#chartsFullscreenOverlay{position:fixed;inset:0;display:none;background:var(--tryvia-bg,#0f1115);z-index:10000}
+#chartsFullscreenOverlay{position:fixed;inset:0;display:none;background:var(--tryvia-bg, var(--tryvia-white));z-index:10000}
 #chartsFullscreenOverlay .fs-close{position:absolute;top:12px;right:12px;z-index:10001;padding:8px 10px;background:var(--tryvia-white);border:1px solid var(--tryvia-dark2);border-radius:10px;cursor:pointer;font-weight:600}
-#chartsFullscreenOverlay .grid{position:absolute;inset:0;padding:16px;display:grid;gap:16px}
+#chartsFullscreenOverlay .grid{position:absolute;inset:0;padding:16px;display:grid;gap:16px;grid-auto-rows:1fr}
 #chartsFullscreenOverlay .grid > *{background:var(--tryvia-white);border-radius:12px;overflow:hidden}
 .btn-sel-charts{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--tryvia-white);border:1px solid var(--tryvia-dark2);border-radius:10px;color:var(--tryvia-dark2);font-weight:600;cursor:pointer}
 .btn-primary{background:var(--tryvia-dark2);color:#fff;border-color:var(--tryvia-dark2)}
@@ -4715,7 +4715,11 @@ document.addEventListener('DOMContentLoaded', function() {
  #chartsFullscreenOverlay .fs-item{display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;background:var(--tryvia-white);box-shadow:0 8px 24px rgba(0,0,0,.12)}
  #chartsFullscreenOverlay .fs-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--tryvia-dark2);color:#fff;font-weight:700}
  #chartsFullscreenOverlay .fs-title{font-size:0.95rem}
- #chartsFullscreenOverlay .fs-body{flex:1;display:flex;align-items:center;justify-content:center;background:var(--tryvia-white);padding:8px;overflow:auto}
+ #chartsFullscreenOverlay .fs-body{flex:1;display:flex;align-items:center;justify-content:center;background:var(--tryvia-white);padding:8px;overflow:auto;position:relative}
+ #chartsFullscreenOverlay .fs-body canvas{position:absolute;inset:8px;width:calc(100% - 16px) !important;height:calc(100% - 16px) !important;}
+ #chartsFullscreenOverlay.fs-count-2 .fs-item{aspect-ratio:16/9}
+ #chartsFullscreenOverlay.fs-count-3 .fs-item, #chartsFullscreenOverlay.fs-count-4 .fs-item{aspect-ratio:1/1}
+ #chartsFullscreenOverlay.fs-count-1 .fs-item{height:100%}
       `;
       document.head.appendChild(s);
     }
@@ -4826,13 +4830,33 @@ document.addEventListener('DOMContentLoaded', function() {
       state.moved=[];
       layoutFor(selItems.length, grid);
       grid.innerHTML='';
+      try{
+        ov.classList.remove('fs-count-1','fs-count-2','fs-count-3','fs-count-4');
+        ov.classList.add('fs-count-' + (selItems.length||1));
+        const body = document.body || document.documentElement;
+        const cs = window.getComputedStyle(body);
+        const bg = cs.background || cs.backgroundColor;
+        if(bg) ov.style.background = bg;
+      }catch(e){}
       selItems.forEach(it=>{
         const movingNode = it.canvas || it.panel;
         if(!movingNode) return;
         const parent=movingNode.parentNode;
         const next=movingNode.nextSibling;
         const prevStyle = movingNode.getAttribute('style');
-        state.moved.push({node: movingNode, parent, next, prevStyle});
+        let ch=null, prevMAR=undefined, prevAR=undefined;
+        try{
+          if(it.kind === 'canvas'){
+            if(window.Chart && Chart.getChart) ch = Chart.getChart(movingNode);
+            if(!ch && movingNode._chart) ch = movingNode._chart;
+            if(ch && ch.options){
+              prevMAR = ch.options.maintainAspectRatio;
+              prevAR = ch.options.aspectRatio;
+              ch.options.maintainAspectRatio = false;
+            }
+          }
+        }catch(e){}
+        state.moved.push({node: movingNode, parent, next, prevStyle, chart: ch, prevMAR, prevAR});
         const wrap=document.createElement('div');
         wrap.className='fs-item';
         const head=document.createElement('div');
@@ -4848,8 +4872,13 @@ document.addEventListener('DOMContentLoaded', function() {
         grid.appendChild(wrap);
         body.appendChild(movingNode);
         try{
-          movingNode.style.width='100%';
-          movingNode.style.height='100%';
+          if(it.kind === 'canvas'){
+            const doResize = ()=>{
+              try{ if(ch && ch.resize) ch.resize(); }catch(err){}
+              try{ if(ch && ch.update) ch.update('none'); }catch(err){}
+            };
+            if(window.requestAnimationFrame) requestAnimationFrame(doResize); else doResize();
+          }
         }catch(e){}
       });
       ov.style.display='block';
@@ -4869,10 +4898,19 @@ document.addEventListener('DOMContentLoaded', function() {
           if(rec.prevStyle != null) node.setAttribute('style', rec.prevStyle);
           else node.removeAttribute('style');
         }catch(e){}
+        try{
+          if(rec.chart && rec.chart.options){
+            if(typeof rec.prevMAR !== 'undefined') rec.chart.options.maintainAspectRatio = rec.prevMAR;
+            if(typeof rec.prevAR !== 'undefined') rec.chart.options.aspectRatio = rec.prevAR;
+            if(rec.chart.resize) rec.chart.resize();
+            if(rec.chart.update) rec.chart.update('none');
+          }
+        }catch(e){}
       });
       state.moved=[];
       ov.style.display='none';
       grid.innerHTML='';
+      try{ ov.classList.remove('fs-count-1','fs-count-2','fs-count-3','fs-count-4'); }catch(e){}
       try{ unlockBodyScroll && unlockBodyScroll(); }catch(e){}
       try{ window.dispatchEvent(new Event('resize')); }catch(e){}
     }
@@ -4884,12 +4922,17 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.type='button';
       btn.textContent='Selecionar Gráficos';
       btn.addEventListener('click', openModal);
+      const header = document.getElementById('header');
       const searchWrap = document.getElementById('searchWrap');
-      if(searchWrap){
-        searchWrap.appendChild(btn);
+      if(header){
+        try{ header.insertBefore(btn, header.firstChild); }
+        catch(e){ header.appendChild(btn); }
+      } else if(searchWrap){
+        try{ searchWrap.insertBefore(btn, searchWrap.firstChild); }
+        catch(e){ searchWrap.appendChild(btn); }
       } else {
-        const header = document.getElementById('header') || document.body;
-        header.appendChild(btn);
+        try{ document.body.insertBefore(btn, document.body.firstChild); }
+        catch(e){ document.body.appendChild(btn); }
       }
     }
     function onOk(){
