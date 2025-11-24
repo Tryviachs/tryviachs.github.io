@@ -1272,9 +1272,9 @@ function calcSLA(cli){
   let pct1=sla1ok/(sla1ok+sla1off),pct2=sla2ok/(sla2ok+sla2off),slaMedia=(pct1+pct2)/2;
   if(slaMedia>=1)return 20; if(slaMedia>=0.9)return 15; if(slaMedia>=0.8)return 10; if(slaMedia>=0.7)return 5; return 0;
 }
-function calcNPS(cli,mediaNps=6){ let nps=cli.nps; if(nps===null||nps===""||isNaN(Number(nps))) nps=mediaNps; nps=Number(nps); if(nps>=9) return 30; if(nps===8) return 22; if(nps===7) return 14; if(nps===6) return 7; if(nps===5) return 2; return 0; }
-function calcNeg(cli){ let neg=Number(cli.neg); if(isNaN(neg)) return 0; if(neg===0) return 30; if(neg===1) return 15; if(neg===2) return 5; if(neg>=3) return 0; return 0; }
-function calcCS(cli,mediaCs=5){ let cs=cli.cs; if(cs===null||cs===""||isNaN(Number(cs))) cs=mediaCs; cs=Number(cs); if(cs>=10) return 20; if(cs===9) return 16; if(cs===8) return 12; if(cs===7) return 8; if(cs===6) return 4; if(cs<=5) return 0; return 0; }
+function calcNPS(cli,mediaNps=6){ let nps=cli.nps; if(nps===null||nps===""||isNaN(Number(nps))) nps=mediaNps; nps=Math.round(Number(nps)); if(nps>=9) return 30; if(nps===8) return 22; if(nps===7) return 14; if(nps===6) return 7; if(nps===5) return 2; return 0; }
+function calcNeg(cli){ let neg=Number(cli.neg); if(isNaN(neg)) return 0; neg=Math.round(neg); if(neg===0) return 30; if(neg===1) return 15; if(neg===2) return 5; if(neg>=3) return 0; return 0; }
+function calcCS(cli,mediaCs=5){ let cs=cli.cs; if(cs===null||cs===""||isNaN(Number(cs))) cs=mediaCs; cs=Math.round(Number(cs)); if(cs>=10) return 20; if(cs===9) return 16; if(cs===8) return 12; if(cs===7) return 8; if(cs===6) return 4; if(cs<=5) return 0; return 0; }
 function calcMedia(list,fieldFn){ let vals=list.map(fieldFn).filter(v=>v!=null&&v!==""&&!isNaN(v)); if(!vals.length) return 0; return Math.round(vals.reduce((a,b)=>a+Number(b),0)/vals.length); }
 function calcCHS(cli,clientesList){ let mediaNPS=calcMedia(clientesList,c=>c.nps),mediaCS=calcMedia(clientesList,c=>c.cs); return Number(calcSLA(cli))+Number(calcNPS(cli,mediaNPS))+Number(calcNeg(cli))+Number(calcCS(cli,mediaCS)); }
 
@@ -1294,7 +1294,7 @@ function formatMesAno(ym){ if(!ym) return ""; let [y,m]=ym.split('-'); return `$
 function normalizeYYYYMM(s){
   if(!s) return "";
   const str = String(s).trim();
-  // 1) YYYY-MM or YYYY/MM or YYYYMM
+  // 1) YYYY-MM or YYYY/MM or YYYYMM (optionally with day at the end)
   let m = str.match(/^(\d{4})[-\/]?(\d{1,2})(?:[-\/]\d{1,2})?$/);
   if(m){
     const y = m[1];
@@ -1315,13 +1315,7 @@ function normalizeYYYYMM(s){
     const mm = m[1].padStart(2,'0');
     return `${y}-${mm}`;
   }
-  // 4) Try to find year and month anywhere (year first anywhere)
-  m = str.match(/(\d{4}).*?(\d{1,2})/);
-  if(m){
-    const y = m[1];
-    const mm = m[2].padStart(2,'0');
-    return `${y}-${mm}`;
-  }
+  // Do NOT try to infer from arbitrary digits (prevents phantom months from telefone/IDs)
   return "";
 }
 function preparaClientes(list){ list.forEach(cli=>{ cli.nome = (cli.nome || '').toString().trim(); cli.chs=calcCHS(cli,list); cli.status=getStatusCHS(cli.chs).txt; cli.dataFmt = normalizeYYYYMM(cli.data); }); }
@@ -1678,45 +1672,83 @@ function processarCSV(texto) {
   try{
     let linhas = (texto||'').split(/\r?\n/).filter(l => l.trim());
     let importados = [];
-    let inicio = 0;
+    if(linhas.length === 0) throw new Error('CSV vazio');
 
-    // Tenta pular o cabeçalho se encontrar palavras chave
-    if(linhas[0] && (linhas[0].toLowerCase().includes('cliente') || linhas[0].toLowerCase().includes('nome'))) {
-      inicio = 1;
-    }
+    // Helpers
+    const toNum = (v)=> toNumberSafe(v);
+    const byHeader = ()=>{
+      const out=[];
+      // Parse header and build index map by names
+      const normalizeHeader = (s)=> String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+      const headerCols = parseCsvLine(linhas[0]||'').map(c=>c!=null?String(c).trim():"");
+      const hnorm = headerCols.map(normalizeHeader);
+      const findIdx = (aliases)=>{ for(const a of aliases){ const idx = hnorm.indexOf(a); if(idx!==-1) return idx; } return -1; };
+      const idxNome   = findIdx(['cliente','nome','cliente/empresa','empresa']);
+      const idxData   = findIdx(['data','mes','m\u00eas','mês']);
+      const idxCS     = findIdx(['percepcao cs','percepcao','percepcao do cliente','percepcao cliente','percep\u00e7ao cs','percepção cs','cs']);
+      const idxNPS    = findIdx(['nps rate','nps','nps medio','nps m\u00e9dio']);
+      const idxNEG    = findIdx(['av neg fresh','av neg','negativas','avaliacoes negativas','avalia\u00e7oes negativas','avaliacao negativa','avalia\u00e7ao negativa','neg']);
+      const idxS1ok   = findIdx(['1a resposta dentro sla','1 resposta dentro sla','primeira resposta dentro sla','1ª resposta dentro sla','primeira resposta ok']);
+      const idxS1off  = findIdx(['1a resposta fora sla','1 resposta fora sla','primeira resposta fora sla','1ª resposta fora sla']);
+      const idxS2ok   = findIdx(['resolucao sla ok','resolu\u00e7ao sla ok','resolucao dentro sla','resolu\u00e7ao dentro sla','resolu\u00e7\u00e3o sla ok','resolução sla ok']);
+      const idxS2off  = findIdx(['resolucao off sla','resolu\u00e7ao off sla','resolucao fora sla','resolu\u00e7ao fora sla','resolu\u00e7\u00e3o off sla','resolução off sla']);
+      const idxGestor = findIdx(['gestor','responsavel','respons\u00e1vel','manager']);
+      const idxCel    = findIdx(['celular','telefone','phone','whatsapp','contato']);
+      const idxAgente = findIdx(['agente','atendente','analista']);
 
-    for (let i = inicio; i < linhas.length; i++) {
-      let colunas = parseCsvLine(linhas[i]);
-      if (!colunas) colunas = [];
-      colunas = colunas.map(c => c != null ? String(c).trim() : "");
+      const hasHeader = (idxNome>=0 && idxData>=0);
+      const inicio = hasHeader ? 1 : 0;
+      for (let i = inicio; i < linhas.length; i++) {
+        let colunas = parseCsvLine(linhas[i]); if (!colunas) continue; colunas = colunas.map(c => c != null ? String(c).trim() : ""); if (colunas.length === 0) continue;
+        const nome  = hasHeader ? (idxNome>=0 ? colunas[idxNome] : '') : (colunas[0]||'');
+        const data  = hasHeader ? (idxData>=0 ? colunas[idxData] : '') : (colunas[1]||'');
+        const cs    = hasHeader ? (idxCS>=0   ? colunas[idxCS]   : '') : (colunas[2]||'');
+        const nps   = hasHeader ? (idxNPS>=0  ? colunas[idxNPS]  : '') : (colunas[3]||'');
+        const neg   = hasHeader ? (idxNEG>=0  ? colunas[idxNEG]  : '') : (colunas[4]||'');
+        const sla1ok  = hasHeader ? (idxS1ok>=0 ? colunas[idxS1ok] : '') : (colunas[5]||'');
+        const sla1off = hasHeader ? (idxS1off>=0? colunas[idxS1off]: '') : (colunas[6]||'');
+        const sla2ok  = hasHeader ? (idxS2ok>=0 ? colunas[idxS2ok] : '') : (colunas[7]||'');
+        const sla2off = hasHeader ? (idxS2off>=0? colunas[idxS2off]: '') : (colunas[8]||'');
+        const gestor  = hasHeader ? (idxGestor>=0? colunas[idxGestor]: '') : (colunas[9]||'');
+        const celular = hasHeader ? (idxCel>=0   ? colunas[idxCel]   : '') : (colunas[10]||'');
+        const agente  = hasHeader ? (idxAgente>=0? colunas[idxAgente]: '') : (colunas[11]||'');
+        if (!nome) continue;
+        const dataFmt = normalizeYYYYMM(data); if(!data || !dataFmt) continue;
+        out.push({ nome, data, dataFmt, cs: toNum(cs), nps: toNum(nps), neg: toNum(neg), sla1ok: Number(sla1ok||0), sla1off: Number(sla1off||0), sla2ok: Number(sla2ok||0), sla2off: Number(sla2off||0), gestor: gestor||"", celular: celular||"", agente: agente||"" });
+      }
+      return out;
+    };
+    const byPosition = ()=>{
+      const out=[]; const inicio= (/(cliente|nome)/i.test(linhas[0]||'')) ? 1 : 0;
+      for (let i=inicio;i<linhas.length;i++){
+        let colunas = parseCsvLine(linhas[i]); if(!colunas) continue; colunas = colunas.map(c=>c!=null?String(c).trim():""); if(colunas.length<2) continue;
+        const [nome,data,cs,nps,neg,sla1ok,sla1off,sla2ok,sla2off,gestor,celular,agente] = colunas;
+        if(!nome) continue; const dataFmt=normalizeYYYYMM(data); if(!data||!dataFmt) continue;
+        out.push({ nome, data, dataFmt, cs: toNum(cs), nps: toNum(nps), neg: toNum(neg), sla1ok: Number(sla1ok||0), sla1off: Number(sla1off||0), sla2ok: Number(sla2ok||0), sla2off: Number(sla2off||0), gestor: gestor||"", celular: celular||"", agente: agente||"" });
+      }
+      return out;
+    };
 
-      if (colunas.length < 5) continue;
-
-      // Mapeamento das colunas (Baseado na sua ordem: Nome, Data, CS, NPS, Neg, SLA...)
-      let [nome, data, cs, nps, neg, sla1ok, sla1off, sla2ok, sla2off, gestor, celular, agente] = colunas;
-
-      if (!nome || !data) continue;
-
-      importados.push({
-        nome: nome,
-        data: data,
-        dataFmt: normalizeYYYYMM(data),
-        cs: toNumberSafe(cs),
-        nps: toNumberSafe(nps),
-        neg: toNumberSafe(neg),
-        sla1ok: Number(sla1ok||0),
-        sla1off: Number(sla1off||0),
-        sla2ok: Number(sla2ok||0),
-        sla2off: Number(sla2off||0),
-        gestor: gestor || "",
-        celular: celular || "",
-        agente: agente || ""
-      });
+    // First attempt: header-based
+    importados = byHeader();
+    // Heuristics: if data seems suspicious, retry positional
+    const validCs = importados.filter(r=>!isNaN(Number(r.cs))).length;
+    const validNps = importados.filter(r=>!isNaN(Number(r.nps))).length;
+    const validNeg = importados.filter(r=>!isNaN(Number(r.neg))).length;
+    const tooFewMetrics = importados.length>0 && ((validCs/importados.length)<0.2 || (validNps/importados.length)<0.2 || (validNeg/importados.length)<0.2);
+    if(importados.length===0 || tooFewMetrics){
+      importados = byPosition();
     }
 
     // Atualiza as variáveis globais
     clientes = importados;
     preparaClientes(clientes);
+    // Se muitos CHS ficaram idênticos (ex.: tudo 38), tenta fallback posicional
+    const uniqueChs = new Set((clientes||[]).map(c=>c.chs)).size;
+    if(clientes.length>30 && uniqueChs<=3){
+      const alt = byPosition();
+      if(alt && alt.length){ clientes = alt; preparaClientes(clientes); }
+    }
     clientesFiltrados = [...clientes];
 
     // Atualiza os filtros de Mês na tela
@@ -1784,8 +1816,9 @@ function getViewList(){
       const len = monthsForClient.length;
       const lastMonth = len ? monthsForClient[len - 1] : null;
       const chsLast = lastMonth ? getCHSForClientInMonth(name, lastMonth) : null;
-      return { nome: name, chs: (typeof chsLast === 'number' ? chsLast : 0) };
-    }).filter(it => typeof it.chs === 'number');
+      if(lastMonth==null || chsLast==null) return null; // exclude clients without last-month data
+      return { nome: name, chs: chsLast };
+    }).filter(it => it && typeof it.chs === 'number');
     if(statusFilter && statusFilter !== 'all') {
       out = out.filter(c => getStatusCHS(c.chs).cls === statusFilter);
     }
