@@ -1832,10 +1832,11 @@ function processarCSV(texto) {
     const meses = Array.from(new Set(clientes.map(c=>c.dataFmt).filter(Boolean))).sort();
     const sel = document.getElementById('mesSelect');
     if(sel){
-         // Preenche o select e seleciona "Todos" por padrão
+         // Preenche o select e seleciona por padrão o ÚLTIMO mês disponível
          sel.innerHTML = `<option value="all">Todos</option>` + meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
-         sel.value = 'all';
-         currentMes = 'all';
+         const lastMonth = meses.length ? meses[meses.length - 1] : 'all';
+         sel.value = lastMonth;
+         currentMes = lastMonth;
     }
 
     // Renderiza o dashboard
@@ -2884,18 +2885,20 @@ function renderRankingGeral(){
     else if(statusObj.cls === 'atencao') grad = yellowGradientForCHS(cli.chs);
     else grad = redGradientForCHS(cli.chs);
 
-    // Determine CHS delta vs previous month
+    // Determine CHS delta vs previous month (suppress when filtering by "Todos")
     let deltaHtml = '';
     try{
-      if(typeof cli._trendDiff === 'number'){
+      if(currentMes === 'all'){
+        deltaHtml = '';
+      } else if(typeof cli._trendDiff === 'number'){
         const diff = cli._trendDiff;
         if(diff > 0){
           // Up: green arrow and value
-          deltaHtml = `<span class="delta-badge delta-up" title="Subiu ${diff} pontos vs ${formatMesAno(cli._prevMonth)}">▲ ${diff}</span>`;
+          deltaHtml = `<span class=\"delta-badge delta-up\" title=\"Subiu ${diff} pontos vs ${formatMesAno(cli._prevMonth)}\">▲ ${diff}</span>`;
         } else if(diff < 0){
-          deltaHtml = `<span class="delta-badge delta-down" title="Desceu ${Math.abs(diff)} pontos vs ${formatMesAno(cli._prevMonth)}">▼ ${Math.abs(diff)}</span>`;
+          deltaHtml = `<span class=\"delta-badge delta-down\" title=\"Desceu ${Math.abs(diff)} pontos vs ${formatMesAno(cli._prevMonth)}\">▼ ${Math.abs(diff)}</span>`;
         } else {
-          deltaHtml = `<span class="delta-badge delta-neutral" title="Sem variação vs ${formatMesAno(cli._prevMonth)}">— 0</span>`;
+          deltaHtml = `<span class=\"delta-badge delta-neutral\" title=\"Sem variação vs ${formatMesAno(cli._prevMonth)}\">— 0</span>`;
         }
       } else {
         deltaHtml = '';
