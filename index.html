@@ -1884,22 +1884,12 @@ function getViewList(){
     }
     return aggregatedMonth;
   } else {
-    // "Todos" -> para cada cliente, mostrar a nota do ÚLTIMO mês disponível (consistente com o delta mostrado)
-    const names = Array.from(new Set((base||[]).map(c=>c.nome)));
-    let out = names.map(name => {
-      const monthsForClient = Array.from(new Set((clientes||[])
-        .filter(r => r.nome === name && r.dataFmt)
-        .map(r => normalizeYYYYMM(r.dataFmt)))).sort();
-      const len = monthsForClient.length;
-      const lastMonth = len ? monthsForClient[len - 1] : null;
-      const chsLast = lastMonth ? getCHSForClientInMonth(name, lastMonth) : null;
-      if(lastMonth==null || chsLast==null) return null; // exclude clients without last-month data
-      return { nome: name, chs: chsLast };
-    }).filter(it => it && typeof it.chs === 'number');
-    if(statusFilter && statusFilter !== 'all') {
-      out = out.filter(c => getStatusCHS(c.chs).cls === statusFilter);
+    // "Todos" -> usar a mesma agregação da página/modal: média do CHS por cliente (across months)
+    let aggregated = aggregateByName(base);
+    if(statusFilter && statusFilter !== 'all'){
+      aggregated = aggregated.filter(a => getStatusCHS(a.chs).cls === statusFilter);
     }
-    return out;
+    return aggregated;
   }
 }
 
