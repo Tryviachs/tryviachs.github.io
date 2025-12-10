@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root{
       --tryvia-dark:#393939; --tryvia-dark2:#222; --tryvia-white:#fff;
@@ -355,6 +357,52 @@
     
     /* Chart titles with 16px font size */
     .dashboard-chart-container h3 { font-size:16px !important; }
+
+    /* Icones cinza estilo okokok.html */
+    .dashboard-chart-container h3 i,
+    .dashboard-ranking-container h3 i {
+      color: var(--tryvia-dark2);
+      margin-right: 8px;
+      font-size: 0.9em;
+    }
+
+    /* Icones cinza para calendário e busca */
+    .calendar-icon {
+      color: var(--tryvia-dark2);
+      font-size: 0.9em;
+    }
+
+    .search-icon {
+      color: var(--tryvia-dark2);
+      font-size: 0.9em;
+    }
+
+    /* Icones para botões */
+    .chart-toggle-btn i,
+    .chart-help-btn i,
+    .fullscreen-btn i {
+      color: var(--tryvia-dark2);
+      font-size: 0.9em;
+    }
+
+    /* Icones para botão de tema */
+    #themeToggleBtn i {
+      color: var(--tryvia-dark2);
+      font-size: 0.9em;
+    }
+
+    /* Icones para botão de ajuda */
+    .help-btn i {
+      color: var(--tryvia-dark2);
+      font-size: 0.9em;
+    }
+
+    /* Icones para setas de navegação */
+    .nav-arrow-btn i {
+      color: var(--tryvia-dark2);
+      font-size: 0.9em;
+    }
+
         .ranking-order-wrap { display:flex; align-items:center; gap:4px; position:absolute; right:12px; top:-2px; z-index:2; }
     .dashboard-ranking-container.ranking-geral .ranking-order-wrap { top:-6px; }
     .ranking-order-wrap .btn { padding:0 12px; font-size:0.85rem; border-radius:10px; height:36px; min-width:60px; font-weight:700; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); box-shadow:var(--tryvia-card-shadow); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
@@ -1123,7 +1171,7 @@
       </div>
 
       <div class="right">
-        <button class="btn" id="themeToggleBtn" type="button" title="Alternar tema">🌙</button>
+        <button class="btn" id="themeToggleBtn" type="button" title="Alternar tema"><i class="fas fa-moon"></i></button>
       </div>
     </div>
   </header>
@@ -1133,7 +1181,7 @@
         const isDark = (t === 'dark');
         document.body.classList.toggle('dark-theme', isDark);
         const btn = document.getElementById('themeToggleBtn');
-        if(btn){ btn.textContent = isDark ? '☀️' : '🌙'; btn.title = isDark ? 'Alternar para tema claro' : 'Alternar para tema escuro'; }
+        if(btn){ btn.innerHTML = isDark ? '<i class=\"fas fa-sun\"></i>' : '<i class=\"fas fa-moon\"></i>'; btn.title = isDark ? 'Alternar para tema claro' : 'Alternar para tema escuro'; }
       }
       const saved = (localStorage.getItem('theme') || 'light');
       if(document.readyState === 'loading'){
@@ -1173,22 +1221,22 @@
     <div id="graficosPrincipais">
       <div class="dashboard-charts-row">
         <div class="dashboard-chart-container">
-          <button class="chart-toggle-btn" title="Mudar tipo do gráfico (apenas este gráfico)" onclick="toggleChartTypeFor('distrib')">🔁</button>
-          <button class="chart-help-btn" data-tip="Mostra quantos clientes estão em cada faixa de saúde (Saudável, Atenção e Crítico) para o filtro/seleção atuais.">?</button>
-          <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
-          <h3>Distribuição de CHS dos Clientes</h3>
+          <button class="chart-toggle-btn" title="Mudar tipo do gráfico (apenas este gráfico)" onclick="toggleChartTypeFor('distrib')"><i class="fas fa-sync-alt"></i></button>
+          <button class="chart-help-btn" data-tip="Mostra quantos clientes estão em cada faixa de saúde (Saudável, Atenção e Crítico) para o filtro/seleção atuais."><i class="fas fa-question"></i></button>
+          <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
+          <h3><i class="fas fa-chart-pie"></i> Distribuição de CHS dos Clientes</h3>
           <div class="chart-wrapper"><canvas id="chartChsDistrib"></canvas></div>
         </div>
         <div class="dashboard-chart-container">
-          <button class="chart-help-btn" data-tip="Percentual de clientes que subiram, caíram ou mantiveram a nota em relação ao mês anterior.">?</button>
-          <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
-          <h3>Clientes em alta, queda e neutros (%)</h3>
+          <button class="chart-help-btn" data-tip="Percentual de clientes que subiram, caíram ou mantiveram a nota em relação ao mês anterior."><i class="fas fa-question"></i></button>
+          <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
+          <h3><i class="fas fa-chart-line"></i> Clientes em alta, queda e neutros (%)</h3>
           <div class="chart-wrapper"><canvas id="chartTrendUp"></canvas></div>
         </div>
         <div class="dashboard-chart-container">
-          <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
+          <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
           <div class="ranking-card-header">
-            <h3 id="indicadorTitle">Evolução CHS (por Mês)</h3>
+            <h3 id="indicadorTitle"><i class="fas fa-chart-area"></i> Evolução CHS (por Mês)</h3>
             <div class="ranking-order-wrap" id="indicatorFiltersWrap">
               <button class="btn" id="indicatorFiltersBtn" type="button" onclick="toggleIndicatorFiltersMenu()" title="Abrir filtros">Filtros</button>
               <div class="filters-menu" id="indicatorFiltersMenu" role="menu" aria-hidden="true">
@@ -1209,23 +1257,23 @@
 
     <div class="dashboard-rankings-row">
       <div class="dashboard-ranking-container" id="rankingPiores">
-        <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
+        <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
         <div class="ranking-card-header">
-          <h3>📉 5 Menores CHS</h3>
+          <h3><i class="fas fa-arrow-down"></i> 5 Menores CHS</h3>
         </div>
         <ul class="dashboard-ranking-list" id="rankingPioresList"></ul>
       </div>
       <div class="dashboard-ranking-container" id="rankingMelhores">
-        <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
+        <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
         <div class="ranking-card-header">
-          <h3>📈 5 Maiores CHS</h3>
+          <h3><i class="fas fa-arrow-up"></i> 5 Maiores CHS</h3>
         </div>
         <ul class="dashboard-ranking-list" id="rankingMelhoresList"></ul>
       </div>
       <div class="dashboard-ranking-container ranking-geral" id="rankingGeral">
-        <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
+        <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
         <div class="ranking-card-header">
-          <h3>🏆 Ranking Geral de Clientes</h3>
+          <h3><i class="fas fa-trophy"></i> Ranking Geral de Clientes</h3>
           <div class="ranking-order-wrap" id="rankingFiltersWrap">
             <button class="btn" id="rankingFiltersBtn" type="button" onclick="toggleRankingFiltersMenu()" title="Abrir filtros">Filtros</button>
             <div class="filters-menu" id="rankingFiltersMenu" role="menu" aria-hidden="true">
@@ -1239,8 +1287,8 @@
         </div>
         <ul class="dashboard-ranking-list" id="rankingGeralList"></ul>
         <div class="ranking-nav-arrows" id="rankingNavArrows">
-          <button class="nav-arrow-btn" id="rankingPrevArrow" onclick="rankingPrev()" title="Página anterior" disabled>‹</button>
-          <button class="nav-arrow-btn" id="rankingNextArrow" onclick="rankingNext()" title="Próxima página" disabled>›</button>
+          <button class="nav-arrow-btn" id="rankingPrevArrow" onclick="rankingPrev()" title="Página anterior" disabled><i class="fas fa-chevron-left"></i></button>
+          <button class="nav-arrow-btn" id="rankingNextArrow" onclick="rankingNext()" title="Próxima página" disabled><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
     </div>
@@ -1293,7 +1341,7 @@
         <div class="modal-controls">
           <input id="compareModalSearch" class="modal-search" placeholder="Buscar nome aqui..." oninput="renderCompareSelector()" style="width:220px;" />
           <div class="date-field" style="margin-left:6px;">
-            <span class="calendar-icon">📅</span>
+            <i class="fas fa-calendar calendar-icon"></i>
             <select id="compareModalMesSelect" class="client-modal-mes" onchange="renderCompareSelector()" title="Filtrar por mês ao selecionar clientes para comparar">
             </select>
           </div>
@@ -1330,7 +1378,7 @@
     <div class="month-selection-box">
       <div class="month-selection-header">
         <div class="month-selection-title">
-          <span style="font-size:1.2rem;margin-right:8px;">📅</span>
+          <i class="fas fa-calendar" style="font-size:1.2rem;margin-right:8px;color:var(--tryvia-dark2);"></i>
           Selecione o Mês para Visualizar
         </div>
         <div class="month-selection-subtitle">
@@ -1362,7 +1410,7 @@
         <div class="modal-title" id="compareModalTitle">Comparação de Clientes</div>
         <div class="modal-controls">
           <div class="date-field" style="margin-left:6px;">
-            <span class="calendar-icon">📅</span>
+            <i class="fas fa-calendar calendar-icon"></i>
             <select id="compareModalMesSelectTop" class="client-modal-mes" onchange="rebuildCompareChartFromModal()" title="Filtrar mês da comparação (visualização)">
             </select>
           </div>
@@ -3568,7 +3616,7 @@ function abrirClienteModal(nomeCliente) {
         <div style="display:flex;align-items:center;gap:10px;">
           <h2 style="color:var(--tryvia-cyan);margin:0;">${escapeHtml(nomeCliente)}</h2>
           <div class="date-field" style="margin-left:6px;">
-            <span class="calendar-icon">📅</span>
+            <i class="fas fa-calendar calendar-icon"></i>
             <select id="clientModalMesSelect" class="client-modal-mes" onchange="updateClienteModal('${escapeHtml(nomeCliente)}', this.value)">${mesOptions}</select>
           </div>
         </div>
@@ -4179,12 +4227,12 @@ function createFloatingFiltersIfNeeded(){
   floatingContainer.innerHTML = `
     <div class="filters-inner" id="floatingFiltersInner">
       <div class="header-search" style="margin-left:0;">
-        <span class="search-icon">🔍</span>
+        <i class="fas fa-search search-icon"></i>
         <input type="text" id="floatSearchInput" class="search-input" placeholder="Buscar clientes..." />
         <div id="floatSearchSuggestions" class="suggestions" role="listbox" aria-hidden="true"></div>
       </div>
       <div class="date-field" style="margin-left:6px;">
-        <span class="calendar-icon">📅</span>
+        <i class="fas fa-calendar calendar-icon"></i>
         <select id="floatMesSelect" class="mes-select">
           <option value="all">Todos</option>
         </select>
@@ -4192,7 +4240,7 @@ function createFloatingFiltersIfNeeded(){
       <div style="display:flex;gap:8px;margin-left:6px;align-items:center;">
         <button class="btn" id="floatSelectBtn">Selecionar clientes</button>
         <button class="btn btn-primary" id="floatCompareBtn">Comparar</button>
-        <button class="help-btn" id="floatHelpBtn" title="Entenda o CHS">?</button>
+        <button class="help-btn" id="floatHelpBtn" title="Entenda o CHS"><i class="fas fa-question"></i></button>
       </div>
     </div>
   `;
