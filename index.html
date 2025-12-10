@@ -585,6 +585,469 @@
       .search-input{ width:180px; }
       .nota-tooltip { white-space:normal; max-width:90vw; overflow-wrap:break-word; word-break:break-word; }
     }
+
+    /* Mobile Responsiveness */
+    @media (max-width:768px){
+      /* Container adjustments */
+      .container{
+        width:100% !important;
+        max-width:100% !important;
+        margin:5px auto 20px;
+        padding:15px 20px;
+        border-radius:12px;
+      }
+
+      /* Header adjustments */
+      .header-inner{
+        flex-direction:column;
+        padding:10px;
+        gap:10px;
+      }
+      .header-inner .left, .header-inner .right{
+        position:static;
+        transform:none;
+        margin:0;
+        width:100%;
+        display:flex;
+        justify-content:center;
+      }
+      #siteTitle{
+        font-size:1.1rem;
+        margin:0 auto 4px;
+      }
+      #siteSubtitle{
+        font-size:0.85rem;
+        margin:0 auto;
+      }
+      .logo-wrap{
+        margin:0 auto 6px;
+      }
+      .logo{
+        width:40px;
+        height:40px;
+      }
+
+      /* Summary boxes - stack vertically */
+      .summary{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+      .summary .box{
+        min-height:50px;
+        padding:8px;
+        font-size:12px;
+      }
+      .summary .box b{
+        font-size:1.2em;
+      }
+
+      /* Charts - single column */
+      .dashboard-charts-row{
+        grid-template-columns:1fr;
+        gap:12px;
+        margin:8px 0;
+      }
+      .dashboard-chart-container{
+        height:300px;
+        padding:10px;
+      }
+      .dashboard-chart-container h3{
+        font-size:14px;
+        margin-bottom:8px;
+      }
+      .chart-toggle-btn, .fullscreen-btn, .chart-help-btn{
+        width:32px;
+        height:32px;
+        top:8px;
+      }
+      .chart-toggle-btn{ left:44px; }
+      .chart-help-btn{ left:8px; }
+      .dashboard-chart-container .chart-toggle-btn ~ .chart-help-btn{ left:76px; }
+
+      /* Rankings - single column */
+      .dashboard-rankings-row{
+        flex-direction:column;
+        gap:12px;
+        margin:8px 0;
+      }
+      .dashboard-ranking-container{
+        height:280px;
+        padding:12px;
+      }
+      .dashboard-ranking-container h3{
+        font-size:14px;
+        top:8px;
+      }
+      .ranking-order-wrap{
+        top:4px;
+        right:8px;
+      }
+      .ranking-order-wrap .btn{
+        height:32px;
+        font-size:0.8rem;
+        padding:0 8px;
+        min-width:50px;
+      }
+
+      /* Ranking list items */
+      .dashboard-ranking-list li{
+        padding:8px 10px;
+        height:44px;
+        font-size:0.9rem;
+      }
+      .dashboard-ranking-list .rank{
+        min-width:32px;
+        padding:2px 6px;
+        font-size:0.8rem;
+      }
+      .dashboard-ranking-list .score{
+        min-width:40px;
+        font-size:0.8rem;
+        padding:2px 6px;
+      }
+      .dashboard-ranking-list .name{
+        font-size:0.9rem;
+      }
+      .delta-badge{
+        font-size:0.75rem;
+        padding:2px 6px;
+        min-width:32px;
+      }
+
+      /* Navigation arrows */
+      .nav-arrow-btn{
+        width:24px;
+        height:24px;
+        font-size:12px;
+      }
+      .ranking-nav-arrows{
+        margin-top:4px;
+      }
+
+      /* Filters */
+      .filters-bar{
+        max-width:100%;
+        margin-bottom:12px;
+        gap:8px;
+      }
+      .search-input{
+        width:150px;
+        font-size:0.9rem;
+      }
+      .mes-select{
+        font-size:0.9rem;
+        padding:6px 10px;
+      }
+
+      /* Modals */
+      .month-selection-modal .month-selection-box{
+        width:95%;
+        max-width:400px;
+        padding:15px;
+      }
+      .month-selection-header h3{
+        font-size:1.1rem;
+      }
+      .month-selection-select{
+        font-size:0.9rem;
+        padding:8px;
+      }
+      .month-selection-btn{
+        padding:8px 12px;
+        font-size:0.9rem;
+      }
+
+      /* Help modal */
+      .help-box{
+        width:95%;
+        padding:12px;
+      }
+      .help-hero{
+        flex-direction:column;
+        gap:12px;
+      }
+      .help-hero .hero-right{
+        width:100%;
+        height:200px;
+      }
+      .help-grid{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      /* Floating filters hidden on mobile */
+      .floating-filters{
+        display:none !important;
+      }
+
+      /* Planilha box */
+      .planilha-box{
+        padding:1.5rem 1rem;
+        margin-bottom:1rem;
+      }
+
+      /* Chart canvas adjustments */
+      .chart-wrapper canvas{
+        max-height:260px !important;
+      }
+
+      /* Pagination */
+      .ranking-pagination .btn{
+        height:28px;
+        min-width:28px;
+        font-size:0.8rem;
+        padding:4px 6px;
+      }
+      .ranking-pagination #rankingPageInfo{
+        font-size:0.7rem;
+      }
+    }
+
+    /* Extra small screens */
+    @media (max-width:480px){
+      .container{
+        padding:10px 15px;
+        margin:2px auto 15px;
+      }
+
+      /* Header */
+      #siteTitle{
+        font-size:1rem;
+      }
+      #siteSubtitle{
+        font-size:0.8rem;
+      }
+
+      /* Summary */
+      .summary .box{
+        min-height:45px;
+        padding:6px;
+        font-size:11px;
+      }
+      .summary .box b{
+        font-size:1.1em;
+      }
+
+      /* Charts */
+      .dashboard-chart-container{
+        height:250px;
+        padding:8px;
+      }
+      .dashboard-chart-container h3{
+        font-size:13px;
+      }
+      .chart-toggle-btn, .fullscreen-btn, .chart-help-btn{
+        width:28px;
+        height:28px;
+        font-size:0.8rem;
+      }
+      .chart-toggle-btn{ left:38px; }
+      .chart-help-btn{ left:6px; }
+      .dashboard-chart-container .chart-toggle-btn ~ .chart-help-btn{ left:66px; }
+
+      /* Rankings */
+      .dashboard-ranking-container{
+        height:240px;
+        padding:10px;
+      }
+      .dashboard-ranking-container h3{
+        font-size:13px;
+      }
+      .ranking-order-wrap .btn{
+        height:28px;
+        font-size:0.75rem;
+        padding:0 6px;
+        min-width:45px;
+      }
+
+      /* Ranking items */
+      .dashboard-ranking-list li{
+        padding:6px 8px;
+        height:40px;
+        font-size:0.85rem;
+      }
+      .dashboard-ranking-list .rank{
+        min-width:28px;
+        padding:2px 4px;
+        font-size:0.75rem;
+      }
+      .dashboard-ranking-list .score{
+        min-width:36px;
+        font-size:0.75rem;
+        padding:2px 4px;
+      }
+      .dashboard-ranking-list .name{
+        font-size:0.85rem;
+      }
+      .delta-badge{
+        font-size:0.7rem;
+        padding:1px 4px;
+        min-width:28px;
+      }
+
+      /* Navigation */
+      .nav-arrow-btn{
+        width:20px;
+        height:20px;
+        font-size:10px;
+      }
+
+      /* Filters */
+      .search-input{
+        width:120px;
+        font-size:0.85rem;
+      }
+      .mes-select{
+        font-size:0.85rem;
+        padding:5px 8px;
+      }
+
+      /* Modals */
+      .month-selection-modal .month-selection-box{
+        width:98%;
+        padding:12px;
+      }
+      .month-selection-header h3{
+        font-size:1rem;
+      }
+      .month-selection-select{
+        font-size:0.85rem;
+        padding:6px;
+      }
+
+      /* Chart canvas */
+      .chart-wrapper canvas{
+        max-height:220px !important;
+      }
+
+      /* Pagination */
+      .ranking-pagination .btn{
+        height:24px;
+        min-width:24px;
+        font-size:0.7rem;
+        padding:2px 4px;
+      }
+    }
+    /* Month selection modal mobile adjustments */
+.month-selection-modal{
+  padding:10px;
+}
+.month-selection-modal .month-selection-box{
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+.month-selection-header{
+  padding:12px 12px 8px;
+}
+.month-selection-header h3{
+  font-size:1rem;
+  margin:0;
+}
+.month-selection-content{
+  padding:8px 12px;
+}
+.month-selection-actions{
+  padding:12px;
+  gap:8px;
+}
+.month-selection-btn{
+  border-radius:8px;
+  font-weight:600;
+}
+
+/* Client modal mobile adjustments */
+.cliente-modal-box{
+  border-radius:12px;
+  max-height:90vh;
+  overflow:auto;
+}
+.cliente-modal-header{
+  padding:12px;
+}
+.cliente-modal-header h3{
+  font-size:1.1rem;
+  margin:0;
+}
+.cliente-modal-body{
+  padding:12px;
+  gap:12px;
+}
+
+/* Compare modal mobile adjustments */
+.compare-modal-box{
+  border-radius:12px;
+  max-height:90vh;
+  overflow:auto;
+}
+.modal-header{
+  padding:12px;
+}
+.modal-header .modal-title{
+  font-size:1.1rem;
+  margin:0;
+}
+.modal-body{
+  padding:12px;
+}
+
+/* Filters menu mobile adjustments */
+.filters-menu{
+  border-radius:8px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
+  max-width:200px;
+}
+.filters-item{
+  padding:10px 12px;
+  font-size:0.9rem;
+}
+
+/* Help modal mobile adjustments */
+.help-overlay{
+  padding:10px;
+}
+.help-box{
+  border-radius:12px;
+  max-height:90vh;
+}
+.help-close{
+  width:32px;
+  height:32px;
+  font-size:0.9rem;
+}
+
+/* Plan de action mobile adjustments */
+.plano-acao-overlay{
+  padding:10px;
+}
+.plano-acao-box{
+  border-radius:12px;
+  max-height:90vh;
+  overflow:auto;
+}
+.plano-acao-close{
+  width:32px;
+  height:32px;
+  font-size:0.9rem;
+}
+
+/* Responsive touch targets */
+@media (max-width:768px){
+  .btn, .search-input, .mes-select{
+    min-height:44px;
+    touch-action:manipulation;
+  }
+  .nav-arrow-btn{
+    min-width:44px;
+    min-height:44px;
+    font-size:14px;
+  }
+  .chart-toggle-btn, .fullscreen-btn, .chart-help-btn{
+    min-width:44px;
+    min-height:44px;
+    font-size:14px;
+  }
+}
+
     /* Tema escuro: paleta em tons de preto, harmonizada com acentos */
     body.dark-theme{
       --tryvia-dark:#e6e6e6; --tryvia-dark2:#cfd2d6; --tryvia-white:#0a0a0a;
