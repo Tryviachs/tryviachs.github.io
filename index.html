@@ -16,110 +16,25 @@
       --tryvia-cyan-bg:#e5fbff; --tryvia-gradient:linear-gradient(135deg,#e5fbff 0%,#f5f5f5 100%);
     }
 
-    /* FIXED RESOLUTION LAYOUT */
     html,body{
       background:var(--tryvia-gradient);
       font-family:'Roboto',Arial,sans-serif!important;
-      margin:0;
-      padding:0;
-      text-align:center;
-      min-height:100vh;
-      width:100%;
-      box-sizing:border-box;
-      overflow-x:visible;
+      margin:0;padding:0;box-sizing:border-box;color:var(--tryvia-dark);
+      width:100vw; overflow-x:hidden;
     }
-    /* Reduced top spacing to minimize space above logo/title */
-    body{
-      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;
-    }
+    body{ display:flex;flex-direction:column;align-items:center;padding-top:6px; }
 
-    header{
-      background:transparent;
-      color:var(--tryvia-dark);
-      padding:0.35rem 1rem;
-      width:100vw;
-      box-sizing:border-box;
-      border-bottom:none;
-      display:block;
-      position:relative;
-      height:auto;
-    }
-    /* header-inner positioned relative to allow absolute centering of title */
-    .header-inner{
-      max-width:1200px;
-      width:100%;
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      gap:1rem;
-      justify-content:center;
-      padding:0.05rem 0;
-      position:relative;
-      min-height:64px;
-    }
+    /* Header */
+    header{ width:100vw; padding:0.35rem 1rem; position:relative; background:transparent; }
+    .header-inner{ width:100%; max-width:100% !important; margin:0 auto; display:flex; align-items:center; gap:1rem; justify-content:center; position:relative; min-height:64px; padding:0 28px; }
+    .header-inner .left{ position:absolute; left:20px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; }
+    .header-inner .right{ position:absolute; right:20px; top:50%; transform:translateY(-50%); display:flex; gap:8px; align-items:center; }
+    .title-wrapper{ text-align:center; }
 
-    /* left and right containers positioned to middle of header */
-    .header-inner .left{ position:absolute; left: calc(0px - max(0px, (100vw - 1200px)/2)); top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; }
-    .header-inner .right{ position:absolute; right:12px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; }
-
-    /* logo wrapper for modern/stylish appearance */
-    .logo-wrap{
-      width:auto;
-      height:auto;
-      border-radius:12px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      background:#fff;
-      box-shadow:none;
-      border:1px solid var(--tryvia-border);
-      padding:4px; /* slightly larger than the logo */
-      overflow:hidden;
-      box-sizing:border-box;
-    }
-    .logo {
-      max-height:48px;
-      width:auto;
-      display:block;
-      vertical-align:middle;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
-    }
-
-    #siteTitle{
-      font-family:'Poppins', 'Roboto', Arial, sans-serif;
-      font-weight:700;
-      font-size:2.55rem; /* adjusted to fit nicely with logo */
-      color:var(--tryvia-dark);
-      letter-spacing:0.4px;
-      margin:0;
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      pointer-events:none;
-      white-space:nowrap;
-      text-align:center;
-      line-height:1;
-    }
-
-    /* New subtitle directly below the main title, Poppins bold and cyan color to match theme */
-    #siteSubtitle{
-      font-family:'Poppins', 'Roboto', Arial, sans-serif;
-      font-weight:700; /* Poppins Bold */
-      font-size:1.05rem;
-      color:var(--tryvia-cyan);
-      letter-spacing:0.6px;
-      margin:0;
-      position:absolute;
-      left:50%;
-      top: 70px;
-      transform:translate(-50%,-50%);
-      pointer-events:none;
-      white-space:nowrap;
-      text-align:center;
-      opacity:0.95;
-      text-transform:uppercase;
-    }
+    .logo-wrap{ width:auto; height:auto; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:1px solid var(--tryvia-border); padding:4px; }
+    .logo { max-height:48px; width:auto; display:block; vertical-align:middle; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08)); }
+    #siteTitle{ font-family:'Poppins', 'Roboto', Arial, sans-serif; font-weight:700; font-size:42px; color:var(--tryvia-dark); letter-spacing:0.2px; margin:0 0 6px 0; text-align:center; line-height:1; }
+    #siteSubtitle{ font-family:'Poppins', 'Roboto', Arial, sans-serif; font-weight:700; font-size:15px; color:var(--tryvia-cyan); margin:0; text-transform:uppercase; }
 
     .search-input{
       padding:.45rem .7rem;
@@ -163,7 +78,7 @@
     .toggle-graficos-btn:hover{ background:#0069d9; }
     /* Collapsible container for extra charts */
     #graficosIndividuais.collapsible{ overflow:hidden; max-height:0; opacity:0; transform:translateY(-8px); transition:max-height .36s ease, opacity .36s ease, transform .36s ease; }
-    #graficosIndividuais.expanded{ max-height:2000px; opacity:1; margin-top:10px; transform:translateY(0); overflow:visible; }
+    #graficosIndividuais.expanded{ max-height:2000px; opacity:1; transform:translateY(0); overflow:visible; }
     .cliente-modal-header{ margin-bottom:10px; }
 
     .planilha-toggle-btn{ background:var(--tryvia-cyan); color:var(--tryvia-white); border:none; font-weight:bold; border-radius:14px; padding:0.6rem 0.8rem; cursor:pointer; box-shadow:var(--tryvia-card-shadow); font-size:1.25rem; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; }
@@ -175,7 +90,7 @@
     #rankingTrendBtn { padding:.28rem .46rem; font-size:0.85rem; height:30px; min-width:36px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); cursor:pointer; }
 
     .container{
-      width:100%; max-width:100%; margin:.8rem auto 1.6rem; background:var(--tryvia-white); border-radius:28px; box-shadow:var(--tryvia-shadow); padding:1.6rem 1.8rem 1.8rem 1.8rem; display:flex; flex-direction:column; align-items:center; box-sizing:border-box; min-height:720px;
+      width:100%; max-width:100% !important; margin:10px auto 40px; background:var(--tryvia-white); border-radius:18px; box-shadow:var(--tryvia-shadow); padding:20px 40px; display:flex; flex-direction:column; align-items:stretch; box-sizing:border-box;
     }
 
     .planilha-box{ background:var(--tryvia-cyan-bg); border-radius:16px; padding:2.1rem 1.6rem; margin-bottom:1.8rem; border:2px solid var(--tryvia-cyan); width:100%; max-width:820px; box-sizing:border-box; text-align:center; box-shadow:var(--tryvia-card-shadow); display:none; flex-direction:column; align-items:center; justify-content:center; opacity:0; transform:translateY(-12px); transition:all .36s ease; }
@@ -232,16 +147,17 @@
     .floating-filters.show{ display:block; opacity:1; transform:translateX(-50%) translateY(0); }
     .floating-filters.hide{ opacity:0; transform:translateX(-50%) translateY(-8px); display:none; }
 
-    .summary-wrapper { width:100%; max-width:100%; margin: 0 0 .6rem 0; display:flex; justify-content:center; }
-    .summary { display:flex; gap:1rem; width:auto; flex-wrap:nowrap; justify-content:center; align-items:center; }
-    .summary .box { background:var(--tryvia-white); border-radius:18px; padding:1.05rem 1rem; font-size:1.03rem; text-align:center; border:2px solid var(--tryvia-border); min-width:180px; box-shadow:var(--tryvia-card-shadow); font-weight:700; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer; transition:all .12s ease; }
-    .summary .box:hover{ transform:translateY(-4px); box-shadow:0 8px 28px rgba(0,0,0,0.08); }
+    .summary-wrapper { width:100%; margin:0 0 12px 0; display:block; }
+    .summary { display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; align-items:stretch; }
+    .summary .box { background:var(--tryvia-white); border-radius:8px; padding:8px 4px; font-size:13px; text-align:center; border:1px solid var(--tryvia-border); box-shadow:var(--tryvia-card-shadow); font-weight:700; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:65px; }
+    .summary .box b { font-size:1.5em; }
+    .summary .box:hover{ transform: translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.15); transition: all 0.3s ease; }
     .box.saude{ color:var(--tryvia-green); background:#e7faee; border-color:var(--tryvia-green); }
     .box.atencao{ color:var(--tryvia-yellow); background:#fffbe7; border-color:var(--tryvia-yellow); }
     .box.critico{ color:var(--tryvia-red); background:#ffeaea; border-color:var(--tryvia-red); }
 
     .chs-geral-row{ width:100%; max-width:1200px; display:flex; justify-content:center; margin-bottom:18px; }
-    .box.geral{ font-weight:800; font-size:1.05rem; border:2px solid currentColor; background:linear-gradient(135deg,#e7faee 0%, #d4f4dd 100%); color:var(--tryvia-green); position:relative; padding:.9rem .9rem; border-radius:14px; box-shadow:var(--tryvia-card-shadow); min-width:160px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px; animation:pulse-health 2s infinite, glowPulse 2.4s ease-in-out infinite; }
+    .box.geral{ background:linear-gradient(135deg,#e7faee 0%, #d4f4dd 100%); color:var(--tryvia-green); border-color:var(--tryvia-green); }
     /* Emphasis variables per status */
     #chsGeralBox{ --chs-glow: rgba(16,185,129,0.28); }
     #chsGeralBox.atencao{ --chs-glow: rgba(245,158,11,0.30); }
@@ -268,33 +184,50 @@
     @keyframes heart-glow { 0%,100%{ transform:translate(-50%,-50%) scale(0.92); opacity:.6; } 50%{ transform:translate(-50%,-50%) scale(1.06); opacity:1; } }
     @keyframes glowPulse { 0%,100%{ box-shadow: var(--tryvia-card-shadow), 0 0 0 0 var(--chs-glow); } 50%{ box-shadow: var(--tryvia-card-shadow), 0 0 0 10px var(--chs-glow); } }
 
-    .dashboard-charts-row{width:100%;max-width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;justify-content:stretch;margin:0 0 .8rem 0;}
-    .dashboard-chart-container{ background:var(--tryvia-cyan-bg); border-radius:20px; box-shadow:var(--tryvia-card-shadow); border:2px solid var(--tryvia-cyan); padding:1.25em 1.25em 1.6em 1.25em; width:100%; height:320px; display:grid; grid-template-rows:auto 1fr; align-items:stretch; justify-items:stretch; position:relative; box-sizing:border-box; }
-    .chart-toggle-btn{ position:absolute; top:10px; right:12px; width:36px; height:36px; border-radius:10px; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; box-shadow:var(--tryvia-card-shadow); }
-    .fullscreen-btn{ position:absolute; top:10px; left:12px; right:auto; width:36px; height:36px; border-radius:10px; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; box-shadow:var(--tryvia-card-shadow); z-index:3; }
-    .dashboard-chart-container .chart-help-btn ~ .fullscreen-btn{ left:54px; right:auto; }
-    /* set these titles to black for better emphasis (keeps subtle) */
-    .dashboard-chart-container h3{color:#000;font-weight:700;font-size:1.05rem;margin:0 0 .9em 0;letter-spacing:.5px;text-transform:uppercase;padding:0 52px;}
-    .dashboard-chart-container > .fullscreen-btn ~ h3{ padding-left: 96px; }
-    .dashboard-chart-container .chart-wrapper{ width:100%; height:100%; position:relative; min-height:0; display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
-    .dashboard-chart-container canvas{ width:100% !important; height:100% !important; max-width:100% !important; max-height:100% !important; position:relative !important; margin:0 !important; display:block !important; }
+    .dashboard-charts-row{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:12px 0;}
+    .dashboard-chart-container{ background:var(--tryvia-cyan-bg); border-radius:14px; box-shadow:var(--tryvia-card-shadow); border:1px solid var(--tryvia-cyan); padding:12px; height:440px; display:flex; flex-direction:column; align-items:stretch; box-sizing:border-box; position:relative;}
+    .dashboard-chart-container h3{color:var(--tryvia-dark);font-weight:700;font-size:14px;margin:0 0 12px 0;text-transform:uppercase;letter-spacing:0.2px;text-align:center;white-space:normal;overflow:visible;}
+    .chart-wrapper{ flex:1; display:flex; align-items:center; justify-content:center; position:relative; padding:6px; min-height:0; }
+    .chart-wrapper canvas{ width:100% !important; height:100% !important; max-width:100% !important; max-height:100% !important; }
+    .chart-toggle-btn{ position:absolute; top:10px; left:54px; width:36px; height:36px; border-radius:10px; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; box-shadow:var(--tryvia-card-shadow); }
+    .fullscreen-btn{ position:absolute; top:10px; left:12px; width:36px; height:36px; border-radius:10px; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; box-shadow:var(--tryvia-card-shadow); z-index:3; }
+    .dashboard-chart-container .chart-toggle-btn ~ .chart-help-btn{ left:96px; right:auto; }
+    .chart-help-btn{ position:absolute; top:10px; left:12px; width:36px; height:36px; border-radius:10px; background:var(--tryvia-white); color:var(--tryvia-cyan); border:1px solid rgba(0,0,0,0.06); cursor:default; display:inline-flex; align-items:center; justify-content:center; font-weight:900; box-shadow:var(--tryvia-card-shadow); }
     .dashboard-chart-container .chart-wrapper + .chart-wrapper{ margin-top:12px; }
-    .dashboard-chart-container:fullscreen, .dashboard-ranking-container:fullscreen{ width:100vw !important; height:100vh !important; max-width:none !important; max-height:none !important; border-radius:0; padding:12px; box-shadow:none; }
+    .dashboard-chart-container:fullscreen, .dashboard-ranking-container:fullscreen{ width:100vw !important; height:100vh !important; max-width:none !important; max-height:none !important; border-radius:0; padding:32px; box-shadow:none; }
     .dashboard-ranking-container:fullscreen{ overflow:auto; }
     .dashboard-ranking-container:fullscreen .dashboard-ranking-list,
-    .dashboard-ranking-container:fullscreen #rankingGeralList{ max-height: calc(100vh - 140px) !important; }
-    .dashboard-ranking-container:fullscreen h3{ font-size:1.3rem; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list li{ font-size:1.15rem; padding:.9em 1.2em; border-radius:16px; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .rank{ min-width:56px; font-size:1rem; padding:.5em 1em; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .score{ font-size:1.05rem; padding:.45em .8em; border-radius:10px; }
+    .dashboard-ranking-container:fullscreen #rankingGeralList{ max-height: calc(100vh - 120px) !important; }
+    .dashboard-ranking-container:fullscreen h3{ font-size:2rem; margin-bottom:20px; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list li{ font-size:1.8rem; padding:1.2em 1.5em; border-radius:16px; margin-bottom:12px; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .rank{ min-width:80px; font-size:1.6rem; padding:.6em 1.2em; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .score{ font-size:1.7rem; padding:.6em 1em; border-radius:12px; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .name{ font-size:1.6rem; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .delta-badge{ font-size:1.2rem; padding:.4em .8em; }
 
-    .ranking-pagination{ display:flex; align-items:center; gap:4px; justify-content:center; margin-top:6px; }
-    .ranking-pagination #rankingPageInfo{ font-weight:800; color:#000; font-size:.9rem; }
-    .ranking-pagination .btn{ padding:.25rem .45rem; font-size:.8rem; border-radius:8px; }
+    .ranking-pagination{ display:flex; align-items:center; gap:2px; justify-content:center; margin-top:4px; }
+    .ranking-pagination #rankingPageInfo{ font-weight:800; color:#000; font-size:.75rem; }
+    .ranking-pagination .btn{ padding:.15rem .3rem; font-size:.7rem; border-radius:6px; min-width:24px; height:24px; }
+    .dashboard-ranking-container:fullscreen .ranking-pagination{ margin-top:16px; }
+    .dashboard-ranking-container:fullscreen .ranking-pagination .btn{ padding:.3rem .6rem; font-size:1rem; min-width:40px; height:40px; }
+    .dashboard-ranking-container:fullscreen .ranking-pagination #rankingPageInfo{ font-size:1rem; }
     body.dark-theme .ranking-pagination #rankingPageInfo{ color:#fff; }
 
-    /* Ranking titles */
-    #rankingPiores h3, #rankingMelhores h3, .dashboard-ranking-container.ranking-geral h3 { color: #000 !important; font-weight:700; }
+    /* Ranking titles - all use the same positioning */
+    .dashboard-ranking-container h3 { 
+      margin:0; 
+      position:absolute; 
+      left:50%; 
+      top:10px; 
+      transform:translateX(-50%); 
+      font-size:16px; 
+      color:#000; 
+      font-weight:700; 
+      text-align:center; 
+      white-space:nowrap; 
+      text-transform:uppercase;
+      letter-spacing:0.4px; 
+    }
     body.dark-theme #rankingPiores h3,
     body.dark-theme #rankingMelhores h3,
     body.dark-theme .dashboard-ranking-container.ranking-geral h3,
@@ -304,93 +237,35 @@
     body.dark-theme .btn { color:#f8fafc; }
     body.dark-theme .help-btn, body.dark-theme .fullscreen-btn, body.dark-theme .chart-toggle-btn { color:#fff; }
 
-    /* Ensure top/bottom rankings show full 5 items without scroll and remain clickable */
-    #rankingPiores .dashboard-ranking-list, #rankingMelhores .dashboard-ranking-list{ overflow: visible; max-height: none; }
-    #rankingPiores, #rankingMelhores{ height:auto; }
-    .dashboard-rankings-row{ align-items: stretch; }
-
-    .dashboard-rankings-row{width:100%;max-width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;justify-content:stretch;margin:0 0 1.6rem 0;}
-.dashboard-rankings-row.one-only{ grid-template-columns: 1fr 1fr 1fr; }
-.dashboard-rankings-row.one-only #rankingGeral{ grid-column: 2; }
-    .dashboard-ranking-container{background:linear-gradient(135deg, #e5fbff 0%, #f0fdff 100%);border-radius:20px;box-shadow:var(--tryvia-card-shadow);border:2px solid var(--tryvia-cyan);padding:1.1em 1.1em 0.9em 1.1em;width:100%;display:flex;flex-direction:column;align-items:center;position:relative;height:auto; box-sizing:border-box;}
-    .dashboard-ranking-container .dashboard-ranking-list{ flex:1 1 auto; width:100%; overflow:auto; margin-top:10px; }
-    .dashboard-ranking-container.ranking-geral{ border-color:var(--tryvia-cyan); border-width:2px; background:linear-gradient(135deg, #e5fbff 0%, #f0fdff 100%); height:auto; padding:1.1em 1.1em 0.9em 1.1em; }
-
-    /* TV mode */
-    html.tv-html{ width:100vw !important; margin:0 !important; overflow-x:hidden !important; background:#fff !important; }
-    body.tv-mode{ overflow:hidden; margin:0 !important; width:100vw !important; overflow-x:hidden !important; background:#fff !important; }
-    body.tv-mode header{ display:none !important; }
-    body.tv-mode .filters-bar{ display:none !important; }
-    body.tv-mode .floating-filters{ display:none !important; }
-    body.tv-mode #toggleGraficosBtn{ display:none !important; }
-    body.tv-mode #graficosIndividuais{ display:none !important; }
-    body.tv-mode .planilha-box{ display:none !important; }
-    body.tv-mode .container{ width:100%; max-width:100%; padding:0; margin:0 auto; height:100vh; min-height:0; box-sizing:border-box; background:#fff; border-radius:0; box-shadow:none; }
-    body.tv-mode .container.with-sidebar{ width: calc(100vw - 88px); margin-left: 88px; }
-    body.tv-mode .summary-wrapper{ width:100%; max-width:none; margin:30px 0 0 0; }
-    body.tv-mode .summary{ width:100%; gap:1rem; flex-wrap:nowrap; justify-content:center; box-sizing:border-box; }
-    body.tv-mode .summary .box{ min-width:0; width:calc((100% - 4rem)/5); flex:0 1 calc((100% - 4rem)/5); padding:12px 14px; font-size:1.05rem; height:104px; box-sizing:border-box; border-radius:12px; transition: height .2s ease; }
-    body.tv-mode .chs-geral-row{ display:none !important; }
-    body.tv-mode .box.geral{ padding:12px 14px; min-width:0; max-width:none; height:104px; border-radius:12px; }
-    body.tv-mode #chsHeart{ font-size:1.25rem !important; }
-    body.tv-mode #chsGeralValor{ font-size:1.2rem !important; }
-    body.tv-mode .dashboard-charts-row{ width:100%; max-width:none; gap:.5rem; margin:30px 0 10px 0; justify-content:center; flex-wrap:nowrap; padding:0 .25rem; box-sizing:border-box; }
-    body.tv-mode .dashboard-charts-row.tv-four .dashboard-chart-container{ width: calc((100% - 1.5rem)/4); flex:0 1 calc((100% - 1.5rem)/4); min-width:0; }
-    /* 3 charts layout (applied by JS with class tv-three) */
-    body.tv-mode .dashboard-charts-row.tv-three .dashboard-chart-container{ width: calc((100% - 1rem)/3); flex:0 1 calc((100% - 1rem)/3); min-width:0; }
-    body.tv-mode .dashboard-chart-container { height: 420px; padding: 10px 8px 12px 8px; transition: height .28s ease; }
-    body.tv-mode .dashboard-chart-container h3{ font-size:.9rem; margin:0 0 4px 0; padding:0 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
-    body.tv-mode .dashboard-chart-container .ranking-card-header{ justify-content:center; }
-    body.tv-mode .dashboard-chart-container .ranking-card-header h3{ position:static; left:auto; transform:none; width:100%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    body.tv-mode .chart-help-btn, body.tv-mode .chart-toggle-btn, body.tv-mode .fullscreen-btn{ display:none !important; }
-    body.tv-mode .dashboard-ranking-container h3{ margin:0 0 10px 0; font-size:1.05rem; text-align:center; }
-    body.tv-mode #rankingGeral .ranking-card-header{ justify-content:center; gap:8px; margin-bottom:10px; }
-    body.tv-mode #rankingGeral .ranking-card-header h3{ margin:0; font-size:1.05rem; text-align:center; position:static; left:auto; transform:none; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    body.tv-mode .dashboard-rankings-row{ width:100%; max-width:none; gap:.75rem; margin:30px 0 0 0; justify-content:center; align-items:stretch; flex-wrap:nowrap; padding:0 .5rem; box-sizing:border-box; }
-    body.tv-mode .dashboard-ranking-container{ width:32%; max-width:none; min-width:0; height:420px; padding:10px; display:flex; flex-direction:column; }
-    body.tv-mode .dashboard-ranking-list{ max-height:352px; margin-top:8px; padding-bottom:12px; scroll-padding-bottom:12px; box-sizing:border-box; flex:1 1 auto; overflow:auto; }
-    body.tv-mode #rankingGeralList{ max-height:352px; margin-top:8px; padding-bottom:12px; scroll-padding-bottom:12px; box-sizing:border-box; flex:1 1 auto; overflow:auto; }
-    body.tv-mode .dashboard-ranking-list li:last-child{ margin-bottom:0; }
-    body.tv-mode #rankingFiltersWrap{ display:none !important; }
-    body.tv-mode #indicatorFiltersWrap{ display:none !important; }
-    body.tv-mode .dashboard-ranking-container.ranking-geral{ width:32%; max-width:none; min-width:0; height:420px; padding:10px; background:var(--tryvia-white); border-width:2px; border-color:var(--tryvia-cyan); }
-    body.tv-mode .dashboard-rankings-row.tv-three .dashboard-ranking-container{ width: calc((100% - 1.5rem)/3); flex:0 1 calc((100% - 1.5rem)/3); min-width:0; }
-
-    /* Show rankings in TV mode (3 col layout handled by JS/CSS) */
-    /* Intencionalmente sem ocultar rankings no modo TV */
-
-    /* TV Mode visual polish */
-    body.tv-mode .summary .box{ background:#f9fbfc; border:1px solid #e6eef3; box-shadow: 0 6px 24px rgba(16,42,67,0.08); }
-    body.tv-mode .summary .box:hover{ transform:translateY(-3px); box-shadow:0 10px 28px rgba(16,42,67,0.12); }
-    body.tv-mode .summary .box::before{ content:""; display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:8px; background:#e9f4fb; color:#0b63b7; border:1px solid #d3e7f3; box-shadow:0 2px 8px rgba(11,99,183,0.08); margin-bottom:6px; }
-    body.tv-mode .summary .box:nth-child(1)::before{ content:"👥"; }
-    body.tv-mode .summary .box:nth-child(2)::before{ content:"💚"; }
-    body.tv-mode .summary .box:nth-child(3)::before{ content:"⚠️"; }
-    body.tv-mode .summary .box:nth-child(4)::before{ content:"⛔"; }
-    body.tv-mode .summary .box:nth-child(5)::before{ content:"📊"; }
+        .dashboard-rankings-row{width:100%;display:flex;gap:18px;margin:12px 0;align-items:stretch;}
+    .dashboard-ranking-container{ background:linear-gradient(135deg, #e5fbff 0%, #f0fdff 100%); border-radius:14px; box-shadow:var(--tryvia-card-shadow); border:1px solid var(--tryvia-cyan); padding:16px; display:flex; flex-direction:column; height:360px; box-sizing:border-box; position:relative; flex:1; min-width:0; }
+        .dashboard-ranking-container .dashboard-ranking-list{ flex:1 1 auto; width:100%; overflow:hidden; margin-top:4px; display:flex; flex-direction:column; justify-content:flex-start; }
+    .dashboard-ranking-container .fullscreen-btn{ position:absolute; top:10px; left:12px; width:36px; height:36px; border-radius:10px; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; box-shadow:var(--tryvia-card-shadow); z-index:3; }
+    .dashboard-ranking-container.ranking-geral{ border:1px solid var(--tryvia-cyan); background:linear-gradient(135deg, #e5fbff 0%, #f0fdff 100%); height:360px; padding:16px; flex:1; min-width:0; }
+    .dashboard-ranking-container.ranking-geral .dashboard-ranking-list{ flex:1 1 auto; width:100%; overflow:hidden; margin-top:4px; display:flex; flex-direction:column; justify-content:flex-start; }
+    .dashboard-ranking-container.ranking-geral h3 { 
+      margin:0; 
+      position:absolute; 
+      left:50%; 
+      top:10px; 
+      transform:translateX(-50%); 
+      font-size:16px; 
+      color:#000; 
+      font-weight:700; 
+      text-align:center; 
+      white-space:nowrap; 
+      text-transform:uppercase;
+      letter-spacing:0.4px; 
+      display:block !important; 
+      visibility:visible !important; 
+      opacity:1 !important; 
+      z-index:10 !important;
+    }
+    .dashboard-ranking-container.ranking-geral .dashboard-ranking-list{ flex:1 1 auto; width:100%; overflow:auto; margin-top:40px; }
 
     /* Ranking list polish + medals */
-    body.tv-mode .dashboard-ranking-list li{ background:linear-gradient(180deg,#f9fcff,#f3f9fd); border:1px solid #e3eef5; box-shadow:0 4px 16px rgba(16,42,67,0.06); position:relative; overflow:hidden; }
-    body.tv-mode .dashboard-ranking-list li > *{ position:relative; z-index:1; }
-    body.tv-mode .dashboard-ranking-list .perf-meter{ position:absolute; left:0; top:0; bottom:0; width:0; background:linear-gradient(90deg, rgba(0,159,66,0.14), rgba(0,207,255,0.10)); z-index:0; }
-    body.tv-mode .dashboard-ranking-list .rank{ border-color:#d3e7f3; color:#0b63b7; background:#fff; }
-    body.tv-mode .dashboard-ranking-list .rank.gold{ border-color:#e2b100; color:#996c00; background:linear-gradient(180deg,#fff3bf,#fde68a); box-shadow:0 4px 16px rgba(226,177,0,0.25); }
-    body.tv-mode .dashboard-ranking-list .rank.silver{ border-color:#c3c7d1; color:#5c6370; background:linear-gradient(180deg,#f5f7fb,#e9edf5); box-shadow:0 4px 16px rgba(92,99,112,0.2); }
-    body.tv-mode .dashboard-ranking-list .rank.bronze{ border-color:#d59a6a; color:#7a4d2b; background:linear-gradient(180deg,#ffe3cc,#ffd7b8); box-shadow:0 4px 16px rgba(122,77,43,0.2); }
-    body.tv-mode .dashboard-ranking-list .score{ border-radius:10px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4); }
 
-    /* Optional fixed sidebar for navigation (TV only) */
-    .tv-sidebar{ position:fixed; left:0; top:0; width:88px; height:100vh; background:linear-gradient(180deg,#0e2a47,#0b1f36); border-right:1px solid rgba(255,255,255,0.06); box-shadow: 0 8px 30px rgba(0,0,0,0.25); z-index:20040; display:flex; flex-direction:column; align-items:center; padding:14px 8px; box-sizing:border-box; }
-    .tv-sidebar .tv-brand{ width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; background:linear-gradient(135deg,#0b63b7,#00cfff); border:2px solid rgba(255,255,255,0.18); box-shadow:0 6px 18px rgba(0,0,0,0.25); margin-bottom:16px; letter-spacing:.6px; }
-    .tv-sidebar .tv-nav{ display:flex; flex-direction:column; gap:10px; width:100%; }
-    .tv-sidebar .tv-nav-item{ width:100%; border:none; border-radius:12px; background:rgba(255,255,255,0.06); color:#e6eef3; font-weight:800; font-size:.78rem; padding:10px 6px; cursor:pointer; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); transition:all .16s ease; }
-    .tv-sidebar .tv-nav-item:hover{ background:rgba(255,255,255,0.12); transform:translateY(-2px); }
-    .tv-sidebar .tv-nav-item:active{ transform:translateY(0); }
-
-    /* TV mode exit button */
-    .tv-exit-btn{ position:fixed; top:10px; right:12px; z-index:20050; display:none; padding:8px 12px; border-radius:10px; border:2px solid var(--tryvia-cyan); background:var(--tryvia-white); color:var(--tryvia-cyan); box-shadow:var(--tryvia-card-shadow); font-weight:700; cursor:pointer; }
-    body.tv-mode .tv-exit-btn{ display:inline-flex; align-items:center; justify-content:center; }
-
+        
     /* header inside ranking card to align title and small button horizontally */
     .ranking-card-header { width:100%; display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:10px; position:relative; }
 
@@ -474,8 +349,15 @@
     .pdca-check{ border-color:#ffc900; }
     .pdca-act{ border-color:#e53935; }
     /* Center the h3 horizontally inside the card using absolute centering so it aligns in middle of card horizontally */
-    .ranking-card-header h3 { margin:0; position:absolute; left:50%; transform:translateX(-50%); font-size:1.05rem; color:#000; font-weight:700; text-align:center; white-space:nowrap; }
-    .ranking-order-wrap { display:flex; align-items:center; gap:8px; position:relative; z-index:2; }
+    .ranking-card-header { width:100%; display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:10px; position:relative; height:40px; }
+    .ranking-card-header h3 { margin:0; position:absolute; left:50%; transform:translateX(-50%); font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; top:10px; }
+    #indicadorTitle { top:0px !important; }
+    
+    /* Chart titles with 16px font size */
+    .dashboard-chart-container h3 { font-size:16px !important; }
+        .ranking-order-wrap { display:flex; align-items:center; gap:4px; position:absolute; right:12px; top:-2px; z-index:2; }
+    .dashboard-ranking-container.ranking-geral .ranking-order-wrap { top:-6px; }
+    .ranking-order-wrap .btn { padding:0 12px; font-size:0.85rem; border-radius:10px; height:36px; min-width:60px; font-weight:700; background:var(--tryvia-white); border:1px solid rgba(0,0,0,0.06); box-shadow:var(--tryvia-card-shadow); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
 
     /* Filters dropdown (for Ranking Geral) */
     .filters-menu { position:absolute; top:100%; right:0; margin-top:6px; background:var(--tryvia-white); border:1px solid var(--tryvia-border); border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.12); padding:6px; display:none; min-width:160px; z-index:10; }
@@ -489,16 +371,29 @@
     .delta-down { background: linear-gradient(90deg,#ff7b7b,#e53935); color:#fff; }
     .delta-neutral { background:linear-gradient(90deg,#e9eef0,#dfeef4); color:#006f5a; }
 
-    #rankingGeralList{ width:100%; list-style:none; margin:0; padding:0; max-height:320px; overflow:auto; display:block; }
+    #rankingGeralList{ width:100%; list-style:none; margin:0; padding:0; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-start; }
 
-    .dashboard-ranking-list{width:100%;list-style:none;margin:0;padding:0;max-height:320px;overflow:auto;}
-    .dashboard-ranking-list li{display:flex;align-items:center;justify-content:space-between;background:var(--tryvia-cyan-bg);border-radius:12px;box-shadow:0 2px 8px #00cfff11;border:2px solid var(--tryvia-cyan);margin-bottom:.45em;padding:.42em .65em;font-size:.9em;font-weight:600;color:var(--tryvia-dark2);cursor:pointer;transition:all .3s ease;}
-    .dashboard-ranking-list li:last-child{ margin-bottom: 0; }
-    .dashboard-ranking-list li:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(0,207,255,0.2);}
-    .dashboard-ranking-list .rank{background:var(--tryvia-white);color:var(--tryvia-cyan);border-radius:50px;font-size:.78rem;font-weight:700;padding:.35em .7em;margin-right:.7em;border:2px solid var(--tryvia-cyan);box-shadow:0 1px 6px #00cfff09;min-width:36px;text-align:center;}
-    .dashboard-ranking-list .client{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:.3em;display:flex;align-items:center;gap:.5rem;position:relative;}
-    .dashboard-ranking-list .score{margin-left:.6em;font-size:.9em;color:var(--tryvia-white);font-weight:700;padding:.28em .55em;border-radius:8px;min-width:46px;text-align:center;}
-    .dashboard-ranking-list .perf-meter{ display:none; }
+    .dashboard-ranking-list{ width:100%; list-style:none; margin:0; padding:0; overflow:hidden; }
+    .dashboard-ranking-list li{ display:flex; align-items:center; justify-content:space-between; background:#e0f7fa; border-radius:10px; padding:.5rem .65rem; margin-bottom:.6rem; font-weight:700; cursor:pointer; border:1px solid rgba(0,188,212,0.2); height:40px; position:relative; overflow:hidden; box-sizing:border-box; }
+    .dashboard-ranking-list .perf-meter{ position:absolute; left:0; top:0; bottom:0; width:0; background:linear-gradient(90deg, rgba(0,159,66,0.14), rgba(0,207,255,0.10)); z-index:0; }
+    .dashboard-ranking-list li > *{ position:relative; z-index:1; }
+    .dashboard-ranking-list li:hover{ box-shadow:0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s ease; }
+    
+    /* Ranking navigation arrows - minimal and discrete */
+    .ranking-nav-arrows{ display:flex; justify-content:center; gap:4px; margin-top:2px; padding:2px 4px; }
+    .nav-arrow-btn{ width:20px; height:20px; border:1px solid var(--tryvia-cyan); background:var(--tryvia-white); color:var(--tryvia-cyan); font-size:10px; cursor:pointer; border-radius:3px; display:flex; align-items:center; justify-content:center; opacity:0.7; transition:all 0.2s ease; }
+    .nav-arrow-btn:hover:not(:disabled){ background:var(--tryvia-cyan); color:white; opacity:1; }
+    .nav-arrow-btn:disabled{ opacity:0.3; cursor:not-allowed; }
+    .dashboard-ranking-list .rank{ background:var(--tryvia-white); color:var(--tryvia-cyan); border-radius:50px; padding:.3rem .6rem; border:1px solid rgba(11,99,183,0.06); font-weight:800; min-width:36px; text-align:center; margin-right:.7em; }
+    .dashboard-ranking-list .client{ flex:1; text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:.3em; display:flex; align-items:center; gap:.5rem; }
+    .dashboard-ranking-list .score{ margin-left:.6em; font-size:.9em; color:var(--tryvia-white); font-weight:700; padding:.28em .55em; border-radius:8px; min-width:46px; text-align:center; }
+    
+    /* efeitos hover */
+    .dashboard-chart-container:hover, .dashboard-ranking-container:hover {
+      transform: translateY(-5px);
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
 
     
 
@@ -729,7 +624,25 @@
     body.dark-theme .box.saude{ background:#0f1914; }
     body.dark-theme .box.atencao{ background:#1a1609; }
     body.dark-theme .box.critico{ background:#1a0b0b; }
-  </style>
+  /* Month Selection Modal */
+.month-selection-modal{ position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:20030; display:flex; align-items:center; justify-content:center; padding:16px; }
+.month-selection-box{ background:var(--tryvia-white); border:2px solid var(--tryvia-cyan); border-radius:16px; width:96%; max-width:480px; max-height:none; overflow:visible; padding:24px; box-shadow:0 18px 46px rgba(0,0,0,0.28); position:relative; text-align:left; }
+.month-selection-header{ text-align:center; margin-bottom:24px; }
+.month-selection-title{ font-size:1.4rem; font-weight:900; color:#000; margin-bottom:8px; display:flex; align-items:center; justify-content:center; }
+.month-selection-subtitle{ color:#0b63b7; font-weight:600; font-size:0.95rem; }
+.month-selection-body{ margin-bottom:24px; }
+.month-selection-content{ display:flex; flex-direction:column; gap:12px; }
+.month-selection-select{ width:100%; padding:14px 16px; border:2px solid var(--tryvia-cyan); border-radius:12px; background:var(--tryvia-white); font-size:1rem; font-weight:700; color:var(--tryvia-dark); box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:all 0.2s ease; }
+.month-selection-select:focus{ outline:none; border-color:var(--tryvia-cyan); box-shadow:0 6px 20px rgba(0,207,255,0.2); }
+.month-selection-actions{ display:flex; gap:12px; justify-content:flex-end; }
+.month-selection-btn{ padding:12px 24px; border-radius:10px; font-weight:700; font-size:1rem; min-width:120px; transition:all 0.2s ease; }
+.month-selection-btn-cancel{ background:var(--tryvia-gray2); color:var(--tryvia-dark); border:1px solid var(--tryvia-border); }
+.month-selection-btn-cancel:hover{ background:#d0d5d9; transform:translateY(-1px); }
+.month-selection-btn-confirm{ background:linear-gradient(135deg,var(--tryvia-cyan),#00a8cc); color:white; border:1px solid var(--tryvia-cyan); box-shadow:0 4px 12px rgba(0,207,255,0.2); }
+.month-selection-btn-confirm:hover{ background:linear-gradient(135deg,#00a8cc,var(--tryvia-cyan)); transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,207,255,0.3); }
+
+</style>
+
 </head>
 <body>
   <header>
@@ -741,9 +654,9 @@
         </div>
       </div>
 
-      <div class="title-wrapper">
-        <h1 id="siteTitle">Customer Health Score</h1>
-        <h2 id="siteSubtitle">DASHBOARD DA SAÚDE DO CLIENTE</h2>
+      <div class="title-wrapper" style="text-align:center">
+        <div id="siteTitle">Customer Health Score</div>
+        <div id="siteSubtitle">DASHBOARD DA SAÚDE DO CLIENTE</div>
       </div>
 
       <div class="right">
@@ -775,7 +688,9 @@
   </script>
 
   <div class="container">
-    <div class="filters-bar" id="mainFiltersBar" role="region" aria-label="Filtros" style="display:none;"></div>
+    <div class="filters-bar" id="mainFiltersBar" role="region" aria-label="Filtros" style="display:none;">
+      <select id="mesSelect" onchange="changeMonth()" style="display:none;"></select>
+    </div>
 
     <div class="summary-wrapper">
       <div class="summary" id="chs-summary">
@@ -795,8 +710,8 @@
     <div id="graficosPrincipais">
       <div class="dashboard-charts-row">
         <div class="dashboard-chart-container">
-          <button class="chart-help-btn" data-tip="Mostra quantos clientes estão em cada faixa de saúde (Saudável, Atenção e Crítico) para o filtro/seleção atuais.">?</button>
           <button class="chart-toggle-btn" title="Mudar tipo do gráfico (apenas este gráfico)" onclick="toggleChartTypeFor('distrib')">🔁</button>
+          <button class="chart-help-btn" data-tip="Mostra quantos clientes estão em cada faixa de saúde (Saudável, Atenção e Crítico) para o filtro/seleção atuais.">?</button>
           <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
           <h3>Distribuição de CHS dos Clientes</h3>
           <div class="chart-wrapper"><canvas id="chartChsDistrib"></canvas></div>
@@ -812,7 +727,7 @@
           <div class="ranking-card-header">
             <h3 id="indicadorTitle">Evolução CHS (por Mês)</h3>
             <div class="ranking-order-wrap" id="indicatorFiltersWrap">
-              <button class="btn" id="indicatorFiltersBtn" type="button" onclick="toggleIndicatorFiltersMenu()" title="Abrir filtros">Filtros ▾</button>
+              <button class="btn" id="indicatorFiltersBtn" type="button" onclick="toggleIndicatorFiltersMenu()" title="Abrir filtros">Filtros</button>
               <div class="filters-menu" id="indicatorFiltersMenu" role="menu" aria-hidden="true">
                 <button class="filters-item" type="button" onclick="applyIndicatorFilter('nps')">NPS</button>
                 <button class="filters-item" type="button" onclick="applyIndicatorFilter('sla')">SLA</button>
@@ -829,22 +744,19 @@
       <!-- Trend chart moved to 'Ver Mais' section -->
     </div>
 
-    
-
-    <div id="graficosIndividuais" class="collapsible expanded" style="display:block;" aria-hidden="false">
-      <!-- New indicator charts: SLA, CS, NPS, Negativas (standardized with above) -->
-      <div class="dashboard-charts-row"></div>
-    </div>
-
     <div class="dashboard-rankings-row">
       <div class="dashboard-ranking-container" id="rankingPiores">
         <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
-        <h3>5 Menores CHS</h3>
+        <div class="ranking-card-header">
+          <h3>📉 5 Menores CHS</h3>
+        </div>
         <ul class="dashboard-ranking-list" id="rankingPioresList"></ul>
       </div>
       <div class="dashboard-ranking-container" id="rankingMelhores">
         <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)">⛶</button>
-        <h3>5 Maiores CHS</h3>
+        <div class="ranking-card-header">
+          <h3>📈 5 Maiores CHS</h3>
+        </div>
         <ul class="dashboard-ranking-list" id="rankingMelhoresList"></ul>
       </div>
       <div class="dashboard-ranking-container ranking-geral" id="rankingGeral">
@@ -852,7 +764,7 @@
         <div class="ranking-card-header">
           <h3>🏆 Ranking Geral de Clientes</h3>
           <div class="ranking-order-wrap" id="rankingFiltersWrap">
-            <button class="btn" id="rankingFiltersBtn" type="button" onclick="toggleRankingFiltersMenu()" title="Abrir filtros">Filtros ▾</button>
+            <button class="btn" id="rankingFiltersBtn" type="button" onclick="toggleRankingFiltersMenu()" title="Abrir filtros">Filtros</button>
             <div class="filters-menu" id="rankingFiltersMenu" role="menu" aria-hidden="true">
               <button class="filters-item" type="button" onclick="applyRankingFilter('up')">Em Alta</button>
               <button class="filters-item" type="button" onclick="applyRankingFilter('down')">Em Queda</button>
@@ -863,10 +775,9 @@
           </div>
         </div>
         <ul class="dashboard-ranking-list" id="rankingGeralList"></ul>
-        <div class="ranking-pagination">
-          <button class="btn" id="rankingPrevBtn" type="button" onclick="rankingPrev()" title="Página anterior">◀</button>
-          <span id="rankingPageInfo">1 / 1</span>
-          <button class="btn" id="rankingNextBtn" type="button" onclick="rankingNext()" title="Próxima página">▶</button>
+        <div class="ranking-nav-arrows" id="rankingNavArrows">
+          <button class="nav-arrow-btn" id="rankingPrevArrow" onclick="rankingPrev()" title="Página anterior" disabled>‹</button>
+          <button class="nav-arrow-btn" id="rankingNextArrow" onclick="rankingNext()" title="Próxima página" disabled>›</button>
         </div>
       </div>
     </div>
@@ -921,7 +832,6 @@
           <div class="date-field" style="margin-left:6px;">
             <span class="calendar-icon">📅</span>
             <select id="compareModalMesSelect" class="client-modal-mes" onchange="renderCompareSelector()" title="Filtrar por mês ao selecionar clientes para comparar">
-              <option value="all">Mês: Todos</option>
             </select>
           </div>
           <button class="btn" onclick="selectAllCompareVisible()">Selecionar todos</button>
@@ -952,6 +862,36 @@
     </div>
   </div>
 
+  <!-- Month selection modal -->
+  <div class="month-selection-modal" id="monthSelectionModal" role="dialog" aria-hidden="true" style="display:none;">
+    <div class="month-selection-box">
+      <div class="month-selection-header">
+        <div class="month-selection-title">
+          <span style="font-size:1.2rem;margin-right:8px;">📅</span>
+          Selecione o Mês para Visualizar
+        </div>
+        <div class="month-selection-subtitle">
+          Escolha o mês que deseja carregar os dados do dashboard
+        </div>
+      </div>
+      <div class="month-selection-body">
+        <div class="month-selection-content">
+          <select id="monthSelectionSelect" class="month-selection-select" title="Selecione o mês para carregar os dados">
+            <option value="">Carregando meses...</option>
+          </select>
+        </div>
+      </div>
+      <div class="month-selection-actions">
+        <button class="btn month-selection-btn month-selection-btn-cancel" onclick="closeMonthSelectionModal()">
+          Cancelar
+        </button>
+        <button class="btn month-selection-btn month-selection-btn-confirm" onclick="confirmMonthSelection()">
+          Carregar Dados
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Compare chart modal -->
   <div class="compare-modal" id="compareModal" role="dialog" aria-hidden="true" style="display:none;">
     <div class="compare-modal-box">
@@ -961,7 +901,6 @@
           <div class="date-field" style="margin-left:6px;">
             <span class="calendar-icon">📅</span>
             <select id="compareModalMesSelectTop" class="client-modal-mes" onchange="rebuildCompareChartFromModal()" title="Filtrar mês da comparação (visualização)">
-              <option value="all">Mês: Todos</option>
             </select>
           </div>
           <button class="btn" onclick="closeCompareModal()" style="background:var(--tryvia-red);color:white;">Fechar</button>
@@ -999,8 +938,8 @@ const URL_DA_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFJga3
 /* Globals */
 let clientes = [];
 let clientesFiltrados = [];
-let currentMes = 'all';
-let currentFilter = "all";
+let currentMes = null;
+let currentFilter = null;
   let chartChsDistrib = null, chartChsEvolucao = null, chartCompare = null;
   let chartSlaEvolucao = null, chartCsEvolucao = null, chartNpsEvolucao = null, chartNegEvolucao = null;
   let chartTypeDistrib = 'doughnut', chartTypeEvol = 'line', chartTypeSLA = 'line', chartTypeCS = 'line', chartTypeNPS = 'line', chartTypeNEG = 'line';
@@ -1008,7 +947,7 @@ let currentFilter = "all";
   let rankingPageSize = 5;
   let selectedClients = new Set();
 let compareSelectedClients = new Set();
-let statusFilter = 'all';
+let statusFilter = null;
 let chartClienteDonut = null;
 let chartClienteComp = null;
 let chartTrendDown = null;
@@ -1017,14 +956,6 @@ let chartIndicadores = null;
 let indicadorAtual = 'chs'; // 'chs' | 'nps' | 'sla' | 'neg' | 'cs'
 let chartChsBreakdown = null;
 let chartTypeBreakdown = 'bar';
-let tvRankingParentOrig = null;
-let tvRankingNextSibling = null;
-let tvTrendParentOrig = null;
-let tvTrendNextSibling = null;
-let tvIndParentOrig = null;
-let tvIndNextSibling = null;
-let tvChsParentOrig = null;
-let tvChsNextSibling = null;
 
 // Configuração global de CHS (thresholds e pesos)
 const CHS_CONFIG = {
@@ -1832,16 +1763,20 @@ function processarCSV(texto) {
     const meses = Array.from(new Set(clientes.map(c=>c.dataFmt).filter(Boolean))).sort();
     const sel = document.getElementById('mesSelect');
     if(sel){
-         // Preenche o select e seleciona por padrão o ÚLTIMO mês disponível
+         // Preenche o select com opção "Todos" mas não seleciona nada ainda
          sel.innerHTML = `<option value="all">Todos</option>` + meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
-         const lastMonth = meses.length ? meses[meses.length - 1] : 'all';
-         sel.value = lastMonth;
-         currentMes = lastMonth;
+         sel.value = 'all'; // Valor padrão
+         currentMes = 'all';
+         statusFilter = 'all';
     }
 
-    // Renderiza o dashboard
+    // Populate compare selects
     populateCompareMonthSelects();
-    renderDashboard();
+    
+    // Mostra modal para usuário selecionar o mês
+    setTimeout(() => {
+      showMonthSelectionModal();
+    }, 500);
     try{ console.log(`Sucesso: ${clientes.length} clientes carregados.`); }catch(e){}
   }catch(erro){
     try{ console.error(erro); }catch(e){}
@@ -1852,15 +1787,31 @@ function processarCSV(texto) {
 function populateCompareMonthSelects(){
   const meses = Array.from(new Set(clientes.map(c=>c.dataFmt).filter(Boolean))).sort();
   const sel1 = document.getElementById('compareModalMesSelect');
-  const selTop = document.getElementById('compareModalMesSelectTop');
-  const options = `<option value="all">Todos</option>` + meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
-  if(sel1) sel1.innerHTML = options;
-  if(selTop) selTop.innerHTML = options;
-
-  // also sync floating month select if it exists
-  const floatMes = document.getElementById('floatMesSelect');
-  const mainMes = document.getElementById('mesSelect');
-  if(floatMes && mainMes) floatMes.innerHTML = mainMes.innerHTML;
+  const sel2 = document.getElementById('compareModalMesSelectTop');
+  const sel3 = document.getElementById('clienteModalMesSelect');
+  const sel4 = document.getElementById('selectModalMesSelect');
+  const sel5 = document.getElementById('rankingFiltersMesSelect');
+  const lastMonth = meses.length ? meses[meses.length - 1] : meses[0];
+  if(sel1){
+    sel1.innerHTML = meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
+    sel1.value = lastMonth;
+  }
+  if(sel2){
+    sel2.innerHTML = meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
+    sel2.value = lastMonth;
+  }
+  if(sel3){
+    sel3.innerHTML = meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
+    sel3.value = lastMonth;
+  }
+  if(sel4){
+    sel4.innerHTML = meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
+    sel4.value = lastMonth;
+  }
+  if(sel5){
+    sel5.innerHTML = meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
+    sel5.value = lastMonth;
+  }
 }
 
 /* FIXED: getViewList now correctly applies the status filter to aggregated data when currentMes === 'all'
@@ -1983,6 +1934,7 @@ function onSummaryClick(key){
   renderDashboard();
 }
 
+
 /* Rendering dashboard and parts */
 function renderDashboard(){
   renderSummary();
@@ -2076,7 +2028,7 @@ function renderSummary(){
     el.style.boxShadow = '';
     el.style.transform = '';
   });
-  if(statusFilter === 'all') {
+  if(statusFilter === 'all' || statusFilter === null) {
     const el = document.getElementById('chsTotal'); if(el){ el.style.boxShadow='0 6px 20px rgba(0,0,0,0.08)'; el.style.transform='translateY(-4px)'; }
   } else if(statusFilter === 'saude') {
     const el = document.getElementById('chsSaudavel'); if(el){ el.style.boxShadow='0 6px 20px rgba(0,0,0,0.08)'; el.style.transform='translateY(-4px)'; }
@@ -2182,13 +2134,15 @@ function createCharts(){
   const lineDataset = { label:'Distribuição CHS', data:dataArr, fill:true, backgroundColor:'rgba(0,207,255,0.18)', borderColor:'#0b63b7', pointBackgroundColor:'#0b63b7', pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:4, pointHoverRadius:6, borderWidth:3 };
   const dataset = (type==='bar') ? barDataset : (type==='doughnut' ? donutDataset : lineDataset);
 
-  let options = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display: type==='pie' || type==='doughnut', position: (type==='doughnut' ? 'top' : 'top'), labels:{ boxWidth:12 } } } };
+  let options = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display: type==='pie' || type==='doughnut', labels:{ boxWidth:12 } } } };
   if(type==='bar'){
     options.scales = { y:{ beginAtZero:true } };
     options.animation = false;
   } else if(type==='doughnut'){
-    options.cutout = '60%';
+    options.cutout = '65%';
+    options.plugins.legend = { position:'bottom', labels:{ boxWidth:12, padding:10, font:{ size:11 } } };
     options.plugins.tooltip = { callbacks: { label: (ctx)=> `${ctx.label}: ${ctx.parsed}` } };
+    options.layout = { padding:{ top:5, bottom:5, left:5, right:5 } };
     // grid background handled by DoughnutGridBG plugin
   }
 
@@ -2862,7 +2816,26 @@ function renderRankingGeral(){
   }
 
   // Use rankingOrderDesc to decide sort order
-  const sorted = filtered.sort((a,b)=> rankingOrderDesc ? (b.chs - a.chs) : (a.chs - b.chs) );
+  // When filtering by trend, sort by trend diff instead of CHS score
+  let sorted;
+  if(rankingTrendState === 'down'){
+    // Em Queda: ordenar pela maior queda (diff mais negativo)
+    sorted = filtered.sort((a,b) => {
+      const diffA = a._trendDiff || 0;
+      const diffB = b._trendDiff || 0;
+      return diffA - diffB; // mais negativo primeiro
+    });
+  } else if(rankingTrendState === 'up'){
+    // Em Alta: ordenar pela maior alta (diff mais positivo)
+    sorted = filtered.sort((a,b) => {
+      const diffA = a._trendDiff || 0;
+      const diffB = b._trendDiff || 0;
+      return diffB - diffA; // mais positivo primeiro
+    });
+  } else {
+    // Normal: ordenar por CHS
+    sorted = filtered.sort((a,b)=> rankingOrderDesc ? (b.chs - a.chs) : (a.chs - b.chs) );
+  }
   const totalItems = sorted.length;
   // If Ranking Geral is fullscreen, enforce at least 10 items per page locally
   const rgElFS = (function(){ try{ return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || null; }catch(e){ return null; } })();
@@ -2915,19 +2888,14 @@ function renderRankingGeral(){
     if (clientSpan) clientSpan.addEventListener('click', function(ev){ ev.stopPropagation(); abrirClienteModal(cli.nome); });
     if(list) list.appendChild(li);
   });
-  const pageInfo = document.getElementById('rankingPageInfo');
-  const prevBtn = document.getElementById('rankingPrevBtn');
-  const nextBtn = document.getElementById('rankingNextBtn');
-  const pagWrap = document.querySelector('#rankingGeral .ranking-pagination');
-  if (pageInfo) pageInfo.textContent = `${rankingPage} / ${totalPages}`;
-  if (prevBtn) prevBtn.disabled = (rankingPage <= 1);
-  if (nextBtn) nextBtn.disabled = (rankingPage >= totalPages);
-  if (pagWrap) pagWrap.style.display = (totalPages > 1 ? 'flex' : 'none');
+  const prevArrow = document.getElementById('rankingPrevArrow');
+  const nextArrow = document.getElementById('rankingNextArrow');
+  if (prevArrow) prevArrow.disabled = (rankingPage <= 1);
+  if (nextArrow) nextArrow.disabled = (rankingPage >= totalPages);
   if (totalItems === 0) {
     if(list) list.innerHTML = '<li style="justify-content:center;background:transparent;border:none;color:var(--tryvia-dark2);font-weight:600;">Nenhum cliente importado.</li>';
-    if (pageInfo) pageInfo.textContent = '0 / 0';
-    if (prevBtn) prevBtn.disabled = true;
-    if (nextBtn) nextBtn.disabled = true;
+    if (prevArrow) prevArrow.disabled = true;
+    if (nextArrow) nextArrow.disabled = true;
   }
 }
 
@@ -3787,7 +3755,7 @@ function createFloatingFiltersIfNeeded(){
         const meses = (typeof getAllMonthsSorted === 'function') ? getAllMonthsSorted() : Array.from(new Set((clientes||[]).map(c=>c.dataFmt).filter(Boolean))).sort();
         const options = `<option value="all">Todos</option>` + meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
         dst.innerHTML = options;
-        dst.value = (typeof currentMes !== 'undefined' && currentMes) ? currentMes : 'all';
+        dst.value = (typeof currentMes !== 'undefined' && currentMes && currentMes !== 'all') ? currentMes : meses[meses.length - 1] || 'all';
       }
     }catch(e){}
   }
@@ -4508,181 +4476,107 @@ document.addEventListener('webkitfullscreenchange', function(){
   }catch(e){}
 });
 function attachFullscreenHandlers(){ /* dblclick to fullscreen disabled intentionally; use button only */ }
-// TV helpers: sidebar and chart defaults
-function ensureTvSidebar(enable){
-  try{
-    const cont = document.querySelector('.container');
-    let sidebar = document.getElementById('tvSidebar');
-    if(enable){
-      if(!sidebar){
-        sidebar = document.createElement('div');
-        sidebar.id = 'tvSidebar';
-        sidebar.className = 'tv-sidebar';
-        sidebar.innerHTML = '<div class="tv-brand">TV</div>' +
-                            '<div class="tv-nav">' +
-                            '  <button class="tv-nav-item" data-nav="resumo">Resumo</button>' +
-                            '  <button class="tv-nav-item" data-nav="clientes">Clientes</button>' +
-                            '  <button class="tv-nav-item" data-nav="tendencias">Tendências</button>' +
-                            '  <button class="tv-nav-item" data-nav="alertas">Alertas</button>' +
-                            '</div>';
-        document.body.appendChild(sidebar);
-      }
-      if(cont) cont.classList.add('with-sidebar');
-    } else {
-      if(sidebar){ try{ sidebar.remove(); }catch(e){} }
-      if(cont) cont.classList.remove('with-sidebar');
-    }
-  }catch(e){}
-}
-let __tvChartsConfigured = false;
-function configureChartsForTv(enable){
-  try{
-    if(typeof Chart === 'undefined') return;
-    if(enable){
-      Chart.defaults.font = Chart.defaults.font || {};
-      Chart.defaults.font.family = "'Poppins','Roboto',Arial,sans-serif";
-      Chart.defaults.font.size = 12;
-      Chart.defaults.color = '#102a43';
-      Chart.defaults.borderColor = '#e8eef3';
-      Chart.defaults.scale = Chart.defaults.scale || {};
-      Chart.defaults.scale.grid = Chart.defaults.scale.grid || {};
-      Chart.defaults.scale.grid.color = '#edf3f7';
-      Chart.defaults.scale.ticks = Chart.defaults.scale.ticks || {};
-      Chart.defaults.scale.ticks.color = '#6b7d8c';
-      Chart.defaults.plugins = Chart.defaults.plugins || {};
-      Chart.defaults.plugins.legend = Chart.defaults.plugins.legend || {};
-      Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
-      Chart.defaults.plugins.legend.labels.boxWidth = 10;
-      Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
-      Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(16,42,67,0.92)';
-      Chart.defaults.plugins.tooltip.titleColor = '#fff';
-      Chart.defaults.plugins.tooltip.bodyColor = '#fff';
-      Chart.defaults.elements = Chart.defaults.elements || {};
-      Chart.defaults.elements.point = Chart.defaults.elements.point || {};
-      Chart.defaults.elements.point.radius = 3;
-      Chart.defaults.elements.line = Chart.defaults.elements.line || {};
-      Chart.defaults.elements.line.borderWidth = 3;
-      __tvChartsConfigured = true;
-    } else {
-      // revert to sane defaults
-      Chart.defaults.font = Chart.defaults.font || {};
-      Chart.defaults.font.family = "'Roboto',Arial,sans-serif";
-      Chart.defaults.font.size = 12;
-      Chart.defaults.color = '#333';
-      Chart.defaults.borderColor = '#e0e0e0';
-      Chart.defaults.scale = Chart.defaults.scale || {};
-      Chart.defaults.scale.grid = Chart.defaults.scale.grid || {};
-      Chart.defaults.scale.grid.color = '#eeeeee';
-      Chart.defaults.scale.ticks = Chart.defaults.scale.ticks || {};
-      Chart.defaults.scale.ticks.color = '#666';
-      Chart.defaults.plugins = Chart.defaults.plugins || {};
-      Chart.defaults.plugins.legend = Chart.defaults.plugins.legend || {};
-      Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
-      Chart.defaults.plugins.legend.labels.boxWidth = 12;
-      Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
-      Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0,0,0,0.8)';
-      Chart.defaults.plugins.tooltip.titleColor = '#fff';
-      Chart.defaults.plugins.tooltip.bodyColor = '#fff';
-      Chart.defaults.elements = Chart.defaults.elements || {};
-      Chart.defaults.elements.point = Chart.defaults.elements.point || {};
-      Chart.defaults.elements.point.radius = 3;
-      Chart.defaults.elements.line = Chart.defaults.elements.line || {};
-      Chart.defaults.elements.line.borderWidth = 2;
-      __tvChartsConfigured = false;
-    }
-  }catch(e){}
-}
-function toggleTvMode(){
-  const body = document.body;
-  const btn = document.getElementById('tvModeBtn');
-  const enable = !body.classList.contains('tv-mode');
-  body.classList.toggle('tv-mode');
-  try{ document.documentElement.classList.toggle('tv-html', enable); }catch(e){}
-  if(btn) btn.textContent = enable ? 'Sair da TV' : 'Visualização na TV';
-  try{ localStorage.setItem('tvMode', enable ? '1' : '0'); }catch(e){}
-  // Adjust ranking page size to fit more items in TV mode
-  try{ window.__origRankingPageSize = window.__origRankingPageSize || rankingPageSize; }catch(e){}
-  try{ if(enable) { rankingPageSize = 20; } else { rankingPageSize = window.__origRankingPageSize || 10; } }catch(e){}
-  // Sidebar and chart defaults
-  ensureTvSidebar(enable);
-  configureChartsForTv(enable);
-  try{
-    const inIframe = (function(){ try{ return window.self !== window.top; }catch(e){ return true; } })();
-    if(enable){ if(!isFullscreen() && !inIframe) requestFs(document.documentElement); }
-    else { if(isFullscreen()) exitFs(); }
-  }catch(e){}
-  window.scrollTo(0,0);
-  applyTvLayoutReflow(enable);
-  setTimeout(()=>{ applyTvScale(); normalizeChartsDPR(); resizeAllChartsForTv(); }, 140);
+
+
+/* Month change function */
+function changeMonth(){
+  const sel = document.getElementById('mesSelect');
+  if(!sel) return;
+  currentMes = sel.value;
+  if(currentMes !== 'all') {
+    statusFilter = null;
+  } else {
+    statusFilter = 'all';
+  }
+  clientesFiltrados = [...clientes];
+  renderDashboard();
 }
 
-function applyTvLayoutReflow(enable){
-  try{
-    const rankingGeral = document.getElementById('rankingGeral');
-    if(!rankingGeral) return;
-    const rows = Array.from(document.querySelectorAll('.dashboard-rankings-row'));
-    // Charts reflow: move TrendUp and Indicadores into the first charts row to have 4 side-by-side
-    const chsDistribCanvas = document.getElementById('chartChsDistrib');
-    const mainChartsRow = chsDistribCanvas ? chsDistribCanvas.closest('.dashboard-charts-row') : null;
-    const trendContainer = (document.getElementById('chartTrendUp')||{}).closest ? document.getElementById('chartTrendUp').closest('.dashboard-chart-container') : null;
-    const indContainer = (document.getElementById('chartIndicadores')||{}).closest ? document.getElementById('chartIndicadores').closest('.dashboard-chart-container') : null;
-    // Summary reflow: move CHS Geral into summary row so all five are on one line
-    const chsBox = document.getElementById('chsGeralBox');
-    const summaryRow = document.getElementById('chs-summary');
-    if(enable){
-      // Save original position
-      tvRankingParentOrig = rankingGeral.parentElement || null;
-      tvRankingNextSibling = rankingGeral.nextElementSibling || null;
-      if(chsBox){ tvChsParentOrig = chsBox.parentElement || null; tvChsNextSibling = chsBox.nextElementSibling || null; }
-      // Move to first rankings row
-      if(rows[0]){
-        rows[0].classList.add('tv-three');
-        rows[0].appendChild(rankingGeral);
-      }
-      if(rows[1]) rows[1].style.display = 'none';
-      // Charts: move extra two charts into first row
-      if(mainChartsRow){
-        if(trendContainer){ tvTrendParentOrig = trendContainer.parentElement; tvTrendNextSibling = trendContainer.nextElementSibling; mainChartsRow.classList.add('tv-four'); mainChartsRow.appendChild(trendContainer); }
-        if(indContainer){ tvIndParentOrig = indContainer.parentElement; tvIndNextSibling = indContainer.nextElementSibling; mainChartsRow.classList.add('tv-four'); mainChartsRow.appendChild(indContainer); }
-      }
-      // Move CHS Geral box into summary row
-      if(chsBox && summaryRow){ summaryRow.appendChild(chsBox); }
+/* Month Selection Modal Functions */
+function showMonthSelectionModal(){
+  const modal = document.getElementById('monthSelectionModal');
+  if(!modal) return;
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+  
+  // Populate months
+  const meses = Array.from(new Set(clientes.map(c=>c.dataFmt).filter(Boolean))).sort();
+  const select = document.getElementById('monthSelectionSelect');
+  if(select && meses.length > 0) {
+    select.innerHTML = `<option value="all">Todos</option>` + meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
+    select.value = meses[meses.length - 1]; // Seleciona o mais recente por padrão
+  }
+}
+
+function closeMonthSelectionModal(){
+  const modal = document.getElementById('monthSelectionModal');
+  if(!modal) return;
+  modal.classList.add('fade-out');
+  setTimeout(() => {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.classList.remove('fade-out');
+  }, 200);
+}
+
+function confirmMonthSelection(){
+  const select = document.getElementById('monthSelectionSelect');
+  if(!select || !select.value) return;
+  
+  const selectedMonth = select.value;
+  
+  // Update main select
+  const mainSelect = document.getElementById('mesSelect');
+  if(mainSelect) {
+    mainSelect.value = selectedMonth;
+    currentMes = selectedMonth;
+    
+    // Se não for "Todos", limpa o statusFilter para mostrar dados do mês específico
+    if(selectedMonth !== 'all') {
+      statusFilter = null;
     } else {
-      // Restore to original position
-      if(tvRankingParentOrig){
-        if(tvRankingNextSibling) tvRankingParentOrig.insertBefore(rankingGeral, tvRankingNextSibling);
-        else tvRankingParentOrig.appendChild(rankingGeral);
-      }
-      if(rows[0]) rows[0].classList.remove('tv-three');
-      if(rows[1]) rows[1].style.display = '';
-      // Restore charts
-      if(trendContainer && tvTrendParentOrig){ if(tvTrendNextSibling) tvTrendParentOrig.insertBefore(trendContainer, tvTrendNextSibling); else tvTrendParentOrig.appendChild(trendContainer); }
-      if(indContainer && tvIndParentOrig){ if(tvIndNextSibling) tvIndParentOrig.insertBefore(indContainer, tvIndNextSibling); else tvIndParentOrig.appendChild(indContainer); }
-      if(mainChartsRow) mainChartsRow.classList.remove('tv-four');
-      // Restore CHS Geral box to original container
-      if(chsBox && tvChsParentOrig){ if(tvChsNextSibling) tvChsParentOrig.insertBefore(chsBox, tvChsNextSibling); else tvChsParentOrig.appendChild(chsBox); }
+      statusFilter = 'all';
     }
-  }catch(e){}
+    
+    // Força atualização do clientesFiltrados
+    clientesFiltrados = [...clientes];
+  }
+  
+  // Sincronizar com o select da barra flutuante
+  const floatSelect = document.getElementById('floatMesSelect');
+  if(floatSelect) {
+    floatSelect.value = selectedMonth;
+    // Disparar evento change caso exista listener
+    const changeEvent = new Event('change', { bubbles: true });
+    floatSelect.dispatchEvent(changeEvent);
+  }
+  
+  // Close modal
+  closeMonthSelectionModal();
+  
+  // Render dashboard with selected month
+  setTimeout(() => {
+    renderDashboard();
+  }, 100);
 }
 
 /* Init */
 document.addEventListener('DOMContentLoaded', function() {
   try{ carregarDoGoogleSheets(); }catch(e){}
   clientesFiltrados = [...clientes];
-  const sel = document.getElementById('mesSelect');
-  if(sel){
-    const meses = Array.from(new Set((clientes || []).map(c=>c.dataFmt).filter(Boolean))).sort();
-    const defaultMes = meses.length ? meses[meses.length - 1] : 'all';
-    currentMes = defaultMes;
-    sel.innerHTML = `<option value="all">Todos</option>` + meses.map(m=>`<option value="${m}">${formatMesAno(m)}</option>`).join('');
-    sel.value = defaultMes;
-  }
   selectedClients = new Set(Array.from(new Set((clientes||[]).map(c=> (c.nome||'').toString().trim()))));
   compareSelectedClients = new Set();
+  
+  // Configura o select inicialmente vazio para não mostrar "Todos"
+  const sel = document.getElementById('mesSelect');
+  if(sel) {
+    sel.innerHTML = '<option value="">Carregando...</option>';
+    sel.value = '';
+  }
+  
   populateCompareMonthSelects();
   renderSelectModalList();
   renderCompareSelector();
-  renderDashboard();
 
   // initialize floating filters wiring and observer and inject toggle
   initFiltersObserver();
@@ -4710,43 +4604,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape') closeIndicatorFiltersMenu();
   });
-  // Exit TV mode with ESC
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && document.body.classList.contains('tv-mode')){
-      toggleTvMode();
-    }
-  });
-  // Initialize TV mode from storage
-  try{
-    const tv = localStorage.getItem('tvMode');
-    if(tv === '1'){
-      document.body.classList.add('tv-mode');
-      try{ document.documentElement.classList.add('tv-html'); }catch(e){}
-      const btn = document.getElementById('tvModeBtn');
-      if(btn) btn.textContent = 'Sair da TV';
-      try{ window.__origRankingPageSize = rankingPageSize; rankingPageSize = 20; }catch(e){}
-      ensureTvSidebar(true);
-      configureChartsForTv(true);
-      applyTvLayoutReflow(true);
-      setTimeout(()=>{ applyTvScale(); normalizeChartsDPR(); resizeAllChartsForTv(); }, 200);
-    }
-  }catch(e){}
-  // Keep scale responsive
-  window.addEventListener('resize', function(){
-    if(document.body.classList.contains('tv-mode')){
-      scheduleTvLayoutUpdate(140);
-    }
-  });
-  try{
-    if(window.visualViewport){
-      window.visualViewport.addEventListener('resize', function(){
-        if(document.body.classList.contains('tv-mode')){
-          scheduleTvLayoutUpdate(140);
-        }
-      });
-    }
-  }catch(e){}
-  attachFullscreenHandlers();
+    attachFullscreenHandlers();
 });
 
 /* small helpers used by pagination buttons - kept as expected */
@@ -4757,6 +4615,5 @@ function editarCliente(name){ alert('Funcionalidade de editar não implementada 
 function ligarCliente(name){ alert('Funcionalidade de ligar não implementada aqui.'); }
 
 </script>
-<button class="tv-exit-btn" type="button" onclick="toggleTvMode()">Sair da TV</button>
 </body>
 </html>
