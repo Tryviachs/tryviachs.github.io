@@ -327,10 +327,11 @@
       margin-top:4px;
     }
     .chart-wrapper canvas{ width:100% !important; height:100% !important; max-width:100% !important; max-height:100% !important; }
-    .chart-toggle-btn,.fullscreen-btn,.chart-help-btn{
+    .chart-toggle-btn,.fullscreen-btn{
       position:absolute;top:12px;
-      width:38px;height:38px;
-      border-radius:12px;
+      width:32px;height:32px;
+      min-width:32px;min-height:32px;
+      border-radius:10px;
       background:linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.9) 100%);
       border:1px solid rgba(0,212,255,0.1);
       cursor:pointer;
@@ -338,27 +339,34 @@
       box-shadow:0 2px 8px rgba(0,0,0,0.04), 0 4px 16px rgba(0,212,255,0.08);
       transition:all 0.25s ease;
       z-index:3;
+      font-size:0.75rem;
+      padding:0;
     }
-    .chart-toggle-btn:hover,.fullscreen-btn:hover,.chart-help-btn:hover{
+    .chart-toggle-btn:hover,.fullscreen-btn:hover{
       transform:translateY(-2px) scale(1.05);
       box-shadow:0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,212,255,0.15);
       border-color:rgba(0,212,255,0.25);
     }
-    .chart-toggle-btn{ left:56px; }
-    .fullscreen-btn{ left:12px; }
-    .chart-help-btn{ left:12px; color:var(--tryvia-cyan); font-weight:900; }
-    .dashboard-chart-container .chart-toggle-btn ~ .chart-help-btn{ left:100px; right:auto; }
+    .fullscreen-btn{ left:8px; }
+    .chart-toggle-btn{ left:calc(8px + 32px + 4px); } /* 8px + btn width + gap */
     .dashboard-chart-container .chart-wrapper + .chart-wrapper{ margin-top:12px; }
-    .dashboard-chart-container:fullscreen, .dashboard-ranking-container:fullscreen{ width:100vw !important; height:100vh !important; max-width:none !important; max-height:none !important; border-radius:0; padding:32px; box-shadow:none; }
+    .dashboard-chart-container:fullscreen, .dashboard-ranking-container:fullscreen{ width:100vw !important; height:100vh !important; max-width:none !important; max-height:none !important; border-radius:0; padding:48px; box-shadow:none; background:#fff; }
     .dashboard-ranking-container:fullscreen{ overflow:auto; }
     .dashboard-ranking-container:fullscreen .dashboard-ranking-list,
-    .dashboard-ranking-container:fullscreen #rankingGeralList{ max-height: calc(100vh - 120px) !important; }
-    .dashboard-ranking-container:fullscreen h3{ font-size:2rem; margin-bottom:20px; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list li{ font-size:1.8rem; padding:1.2em 1.5em; border-radius:16px; margin-bottom:12px; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .rank{ min-width:80px; font-size:1.6rem; padding:.6em 1.2em; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .score{ font-size:1.7rem; padding:.6em 1em; border-radius:12px; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .name{ font-size:1.6rem; }
-    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .delta-badge{ font-size:1.2rem; padding:.4em .8em; }
+    .dashboard-ranking-container:fullscreen #rankingGeralList{ max-height: calc(100vh - 160px) !important; overflow-y:auto; gap:16px; }
+    .dashboard-ranking-container:fullscreen h3{ font-size:2.5rem !important; margin-bottom:32px !important; position:relative !important; left:auto !important; top:auto !important; transform:none !important; }
+    .dashboard-ranking-container:fullscreen .ranking-card-header h3{ position:relative !important; left:auto !important; top:auto !important; transform:none !important; font-size:2.5rem !important; }
+    /* Estilos fullscreen para todos os rankings incluindo ranking geral */
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list li,
+    .dashboard-ranking-container:fullscreen #rankingGeralList li{ font-size:1.4rem; padding:1.4em 2em; border-radius:20px; margin-bottom:0; height:auto !important; min-height:70px; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .rank,
+    .dashboard-ranking-container:fullscreen #rankingGeralList .rank{ min-width:70px; font-size:1.5rem !important; padding:.7em 1em; border-radius:16px; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .client,
+    .dashboard-ranking-container:fullscreen #rankingGeralList .client{ font-size:1.5rem !important; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .score,
+    .dashboard-ranking-container:fullscreen #rankingGeralList .score{ font-size:1.4rem !important; padding:.7em 1.2em; border-radius:14px; min-width:80px; }
+    .dashboard-ranking-container:fullscreen .dashboard-ranking-list .delta-badge,
+    .dashboard-ranking-container:fullscreen #rankingGeralList .delta-badge{ font-size:1.1rem !important; padding:.5em 1em; }
 
     .ranking-pagination{ display:flex; align-items:center; gap:2px; justify-content:center; margin-top:4px; }
     .ranking-pagination #rankingPageInfo{ font-weight:800; color:#000; font-size:.75rem; }
@@ -462,21 +470,6 @@
     }
     .dashboard-ranking-container.ranking-geral .dashboard-ranking-list{ flex:1 1 auto; width:100%; overflow:hidden; margin-top:4px; display:flex; flex-direction:column; justify-content:flex-start; }
     .dashboard-ranking-container.ranking-geral h3 { 
-      margin:0; 
-      position:absolute; 
-      left:50%; 
-      top:14px; 
-      transform:translateX(-50%); 
-      font-size:13px; 
-      color:var(--tryvia-dark); 
-      font-weight:800; 
-      text-align:center; 
-      white-space:nowrap; 
-      text-transform:uppercase;
-      letter-spacing:0.5px; 
-      display:flex !important; 
-      align-items:center;
-      gap:8px;
       visibility:visible !important; 
       opacity:1 !important; 
       z-index:10 !important;
@@ -1183,14 +1176,16 @@
         font-size:14px;
         margin-bottom:8px;
       }
-      .chart-toggle-btn, .fullscreen-btn, .chart-help-btn{
-        width:32px;
-        height:32px;
+      .chart-toggle-btn, .fullscreen-btn{
+        width:28px;
+        height:28px;
+        min-width:28px;
+        min-height:28px;
         top:8px;
+        font-size:0.65rem;
       }
-      .chart-toggle-btn{ left:44px; }
-      .chart-help-btn{ left:8px; }
-      .dashboard-chart-container .chart-toggle-btn ~ .chart-help-btn{ left:76px; }
+      .fullscreen-btn{ left:6px; }
+      .chart-toggle-btn{ left:calc(6px + 28px + 3px); }
 
       /* Rankings - single column */
       .dashboard-rankings-row{
@@ -1703,13 +1698,11 @@
       <div class="dashboard-charts-row">
         <div class="dashboard-chart-container">
           <button class="chart-toggle-btn" title="Mudar tipo do gráfico (apenas este gráfico)" onclick="toggleChartTypeFor('distrib')"><i class="fas fa-sync-alt"></i></button>
-          <button class="chart-help-btn" data-tip="Mostra quantos clientes estão em cada faixa de saúde (Saudável, Atenção e Crítico) para o filtro/seleção atuais."><i class="fas fa-question"></i></button>
           <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
           <h3><i class="fas fa-chart-pie"></i> Distribuição de CHS dos Clientes</h3>
           <div class="chart-wrapper"><canvas id="chartChsDistrib"></canvas></div>
         </div>
         <div class="dashboard-chart-container">
-          <button class="chart-help-btn" data-tip="Percentual de clientes que subiram, caíram ou mantiveram a nota em relação ao mês anterior."><i class="fas fa-question"></i></button>
           <button class="fullscreen-btn" title="Tela cheia" onclick="toggleElementFullscreen(this)"><i class="fas fa-expand"></i></button>
           <h3><i class="fas fa-chart-line"></i> Clientes em alta, queda e neutros (%)</h3>
           <div class="chart-wrapper"><canvas id="chartTrendUp"></canvas></div>
