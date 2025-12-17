@@ -2188,10 +2188,6 @@
 
 
 
-    .table-region {
-      display: none !important;
-    }
-
     /* Modal-centered overlay styles (ensure select/compare open as overlay, centered) */
     .compare-selector-modal,
     .compare-modal {
@@ -2200,15 +2196,21 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 14000;
+      z-index: 15000;
       font-family: 'Roboto', Arial, sans-serif !important;
-      animation: overlayFadeIn 0.25s ease;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .compare-selector-modal.show,
+    .compare-modal.show {
+      opacity: 1;
     }
 
     .compare-selector-box,
@@ -2243,10 +2245,12 @@
     }
 
     .modal-title {
+      font-size: 1.2rem;
       font-weight: 800;
       color: var(--tryvia-cyan);
-      font-size: 1.1rem;
-      letter-spacing: -0.3px;
+      white-space: normal;
+      line-height: 1.3;
+      max-width: 280px;
     }
 
     .modal-controls {
