@@ -895,6 +895,16 @@
       z-index: 3;
       font-size: 0.75rem;
       padding: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Show buttons on chart/ranking container hover */
+    .dashboard-chart-container:hover .chart-toggle-btn,
+    .dashboard-chart-container:hover .fullscreen-btn,
+    .dashboard-ranking-container:hover .fullscreen-btn {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .chart-toggle-btn:hover,
@@ -1834,6 +1844,15 @@
       right: 12px;
       top: -2px;
       z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    /* Show filter buttons on ranking container hover */
+    .dashboard-ranking-container:hover .ranking-order-wrap {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .dashboard-ranking-container.ranking-geral .ranking-order-wrap {
