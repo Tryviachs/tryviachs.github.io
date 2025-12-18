@@ -4896,12 +4896,12 @@
       m.style.display = 'flex';
       m.setAttribute('aria-hidden', 'false');
       lockBodyScroll();
-      m.classList.remove('fade-out');
-      m.classList.add('fade-in');
-      const box = m.querySelector('.compare-selector-box');
-      if (box) { box.classList.add('scale-in'); setTimeout(function () { box.classList.remove('scale-in'); }, 280); }
-      const onEndOpen = function () { if (m.classList.contains('fade-in')) m.classList.remove('fade-in'); m.removeEventListener('animationend', onEndOpen); };
-      m.addEventListener('animationend', onEndOpen);
+
+      // Trigger smooth animation
+      setTimeout(() => {
+        m.classList.add('show');
+      }, 10);
+
       setTimeout(function () { const s = document.getElementById('compareModalSearch'); if (s) s.focus(); }, 50);
     }
 
@@ -8184,7 +8184,474 @@
     function editarCliente(name) { alert('Funcionalidade de editar não implementada aqui.'); }
     function ligarCliente(name) { alert('Funcionalidade de ligar não implementada aqui.'); }
 
+
+    /* ========== Client Selection Modal Interface ========== */
+    function openSelectModal() {
+      const modal = document.getElementById('clientSelectModal');
+      if (!modal) return;
+      // Reset to default selection mode
+      const title = document.getElementById('selectModalTitle');
+      if (title) title.innerText = 'Selecionar Clientes';
+
+      const btn = document.getElementById('selectModalBtn');
+      if (btn) {
+        btn.innerText = 'Concluir';
+        // Default behavior: just close
+        btn.onclick = closeSelectModal;
+        btn.className = 'btn btn-primary';
+      }
+
+      modal.classList.add('show');
+      modal.style.visibility = 'visible';
+      renderSelectModalList();
+      setTimeout(() => {
+        const s = document.getElementById('modalClientSearch');
+        if (s) s.focus();
+      }, 100);
+    }
+
+    function openCompareSelector() {
+      const modal = document.getElementById('clientSelectModal');
+      if (!modal) return;
+
+      // Set comparison mode
+      const title = document.getElementById('selectModalTitle');
+      if (title) title.innerText = 'Selecione os Clientes para Comparar';
+
+      const btn = document.getElementById('selectModalBtn');
+      if (btn) {
+        btn.innerText = 'Gerar Comparação';
+        btn.onclick = confirmAndCompare;
+        btn.className = 'btn btn-primary';
+      }
+
+      modal.classList.add('show');
+      modal.style.visibility = 'visible';
+      renderSelectModalList();
+      setTimeout(() => { const s = document.getElementById('modalClientSearch'); if (s) s.focus(); }, 100);
+    }
+
+    function confirmAndCompare() {
+      // Close select modal
+      const selModal = document.getElementById('clientSelectModal');
+      if (selModal) {
+        selModal.classList.remove('show');
+        setTimeout(() => { selModal.style.visibility = 'hidden'; }, 300);
+      }
+
+      // Open comparison modal
+      const compModal = document.getElementById('clientCompareModal');
+      if (compModal) {
+        compModal.classList.add('show');
+        compModal.style.visibility = 'visible';
+        setTimeout(renderCompareCharts, 200);
+      }
+    }
+
+    function closeCompareModal() {
+      const modal = document.getElementById('clientCompareModal');
+      if (!modal) return;
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.visibility = 'hidden';
+      }, 300);
+    }
+
+    let compareChart = null;
+
+    function populateCompareMonths() {
+      const select = document.getElementById('compareModalMonth');
+      if (!select) return;
+
+      let months = [];
+      // Use global clientes if available
+      if (typeof clientes !== 'undefined') {
+        months = Array.from(new Set(clientes.map(c => c.dataFmt).filter(Boolean))).sort();
+      }
+
+      const current = select.value;
+      // Keep existing options if just initializing or check usage
+      select.innerHTML = '<option value="all">Todo o Período</option>';
+      months.forEach(m => {
+        let label = m;
+        if (typeof formatMesAno === 'function') label = formatMesAno(m);
+        select.innerHTML += `<option value="${m}">${label}</option>`;
+      });
+
+      if (current && (current === 'all' || months.includes(current))) select.value = current;
+    }
+
+    function renderCompareCharts() {
+      const select = document.getElementById('compareModalMonth');
+      // Only populate if empty (first run) or we want to ensure fresh data
+      if (select && select.options.length <= 1) populateCompareMonths();
+
+      const targets = Array.from(selectedClients || []);
+      const container = document.getElementById('compareChartsArea');
+      if (!container) return;
+
+      if (targets.length === 0) {
+        container.innerHTML = '<div style="width:100%; text-align:center; padding:40px; color:#666; font-size:1.1rem;">Nenhum cliente selecionado.<br><br><button class="btn btn-primary" onclick="closeCompareModal(); setTimeout(openCompareSelector, 300);">Selecionar Clientes Agora</button></div>';
+        return;
+      }
+
+      const monthFilter = select ? select.value : 'all';
+
+      // Prepare Canvas if needed
+      let canvas = document.getElementById('compChartMain');
+      if (!canvas) {
+        container.innerHTML = `
+                <div class="dashboard-chart-container" style="height:450px; padding:20px; box-shadow:none; border:1px solid #eee;">
+                    <div class="chart-wrapper" style="position:relative; height:100%; width:100%;">
+                        <canvas id="compChartMain"></canvas>
+                    </div>
+                </div>
+            `;
+
+        canvas = document.getElementById('compChartMain');
+      }
+
+      // Aggregate Data
+      const clientData = targets.map(name => {
+        // Filter raw data
+        let rows = (typeof clientes !== 'undefined' ? clientes : []).filter(c => c.nome === name);
+        if (monthFilter && monthFilter !== 'all') {
+          rows = rows.filter(c => c.dataFmt === monthFilter);
+        }
+
+        if (rows.length === 0) return null;
+
+        const getVal = (r, k) => {
+          if (!k) return 0;
+          let v = r[k];
+          if (typeof v === 'string') v = v.replace(',', '.').replace(/[^0-9.\-]/g, ''); // Clean non-numeric
+          return Number(v) || 0;
+        };
+
+        // Use more robust detection for SLA/Negatives by checking array of potential keys
+        // or by calculating from raw fields if necessary (like SLA = sla1ok / total)
+
+        let totalCHS = 0, totalSLA = 0, totalNPS = 0, totalCS = 0, totalNeg = 0;
+        let countSLA = 0; // SLA is often a calculated percentage from raw counts in some contexts
+
+        rows.forEach(r => {
+          // CHS
+          totalCHS += (Number(r.chs) || 0);
+
+          // CS
+          let cs = r.cs || r.cs_nota || 0;
+          if (typeof cs === 'string') cs = cs.replace(',', '.');
+          totalCS += (Number(cs) || 0);
+
+          // NPS
+          let nps = r.nps || r.nps_nota || 0;
+          if (typeof nps === 'string') nps = nps.replace(',', '.');
+          totalNPS += (Number(nps) || 0);
+
+          // NEGATIVAS - Check various potential keys based on previous files findings
+          let neg = r.neg || r.negativas || r.avNeg || r.av_neg || r.avNegFresh || 0;
+          if (typeof neg === 'string') neg = neg.replace(',', '.');
+          totalNeg += (Number(neg) || 0);
+
+          // SLA - Often calculated from sla1ok, sla1off, etc. OR just a field 'sla'
+          // If 'sla' field exists directly:
+          if (r.sla !== undefined || r.sla_nota !== undefined) {
+            let s = r.sla || r.sla_nota || 0;
+            if (typeof s === 'string') s = s.replace(',', '.');
+            totalSLA += (Number(s) || 0);
+            countSLA++;
+          } else {
+            // Try calculating from typical tickets columns if available
+            // e.g. sla1ok + sla2ok...
+            // Fallback to 0 if not found
+            let s = 0; // Default
+            // Check if we have ticket counts
+            const t1 = Number(r.sla1ok) || 0, f1 = Number(r.sla1off) || 0;
+            if (t1 + f1 > 0) {
+              s = (t1 / (t1 + f1)) * 100;
+              totalSLA += s;
+              countSLA++;
+            }
+          }
+        });
+
+        const _chs = totalCHS / rows.length;
+        const _nps = totalNPS / rows.length;
+        const _cs = totalCS / rows.length;
+        // Negativas usually is a SUM if it's a count, but 'average negative score'? 
+        // Dashboard "Avaliações Negativas (Qtd)" implies count. 
+        // If we are showing "Average per month" or "Total"?
+        // If monthFilter is 'all', showing AVERAGE per month is usually better for 'score' types, but TOTAL for 'count' types.
+        // However, to keep it simple and consistent with bar chart (0-100 or small numbers), let's use Average per row for scores.
+        // For Negativas (Count), Average per row (per month) is also fine.
+        const _neg = totalNeg / rows.length;
+
+        let _sla = 0;
+        if (countSLA > 0) _sla = totalSLA / countSLA;
+        else {
+          // If no SLA calculated inside loop, try simpler average logic
+          _sla = 0;
+        }
+
+        return {
+          name: name,
+          data: [
+            Math.round(_chs),
+            Math.round(_nps * 10) / 10,
+            Math.round(_sla * 10) / 10,
+            Math.round(_neg * 10) / 10,
+            Math.round(_cs * 10) / 10
+          ]
+        };
+      }).filter(Boolean);
+
+      if (canvas) {
+        if (compareChart) compareChart.destroy();
+
+        const labels = ['CHS', 'NPS', 'SLA', 'Negativas', 'CS'];
+        const colors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#6f42c1', '#17a2b8', '#e83e8c', '#fd7e14'];
+
+        const datasets = clientData.map((d, i) => ({
+          label: d.name,
+          data: d.data,
+          backgroundColor: colors[i % colors.length],
+          borderRadius: 4,
+          barPercentage: 0.6,
+          categoryPercentage: 0.8
+        }));
+
+        compareChart = new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: datasets
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 40
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 20,
+                  font: { size: 12, weight: 'bold' }
+                }
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                  label: function (context) {
+                    return context.dataset.label + ': ' + context.parsed.y;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grace: '10%'
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function closeSelectModal() {
+      const modal = document.getElementById('clientSelectModal');
+      if (!modal) return;
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.visibility = 'hidden';
+      }, 300);
+    }
+
+    function renderSelectModalList() {
+      const listEl = document.getElementById('modalClientList');
+      if (!listEl) return;
+
+      const searchInput = document.getElementById('modalClientSearch');
+      const term = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+      // Use unique clients
+      const names = Array.from(new Set((clientes || []).map(c => (c.nome || '').toString().trim()).filter(Boolean)))
+        .filter(n => !term || n.toLowerCase().includes(term))
+        .sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+
+      listEl.innerHTML = '';
+
+      if (names.length === 0) {
+        listEl.innerHTML = '<div style="padding:10px; text-align:center; color:#666;">Nenhum cliente encontrado.</div>';
+        return;
+      }
+
+      names.forEach(name => {
+        const id = 'modal_chk_' + Math.random().toString(36).slice(2, 9);
+        const checked = selectedClients && selectedClients.has(name);
+        const avg = getAverageCHSForName(name);
+        const statusObj = getStatusCHS(Number(avg));
+        const badgeColor = (statusObj && statusObj.cor) ? statusObj.cor : '#006f5a';
+
+        const row = document.createElement('div');
+        row.className = 'compare-selector-item';
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '10px';
+        row.style.padding = '8px 12px';
+        row.style.cursor = 'pointer';
+
+        row.innerHTML = `
+            <input type="checkbox" id="${id}" data-name="${escapeHtml(name)}" ${checked ? 'checked' : ''} style="transform:scale(1.2); cursor:pointer;">
+            <div style="flex:1; font-weight:600; font-size:1rem;">${escapeHtml(name)}</div>
+            <div class="chs-badge" style="border:1px solid ${badgeColor}; color:${badgeColor}; background:#fff; padding:2px 8px; border-radius:6px; font-weight:800;">${avg}</div>
+          `;
+
+        const input = row.querySelector('input');
+        const toggle = () => {
+          input.checked = !input.checked;
+          const n = input.getAttribute('data-name');
+          if (input.checked) selectedClients.add(n);
+          else selectedClients.delete(n);
+
+          updateSelectedClientsInputLabel();
+          rankingPage = 1;
+          renderDashboard();
+        };
+
+        input.addEventListener('change', (e) => {
+          // Input click handled natively, just sync log
+          e.stopPropagation();
+          const n = input.getAttribute('data-name');
+          if (input.checked) selectedClients.add(n);
+          else selectedClients.delete(n);
+          updateSelectedClientsInputLabel();
+          rankingPage = 1;
+          renderDashboard();
+        });
+
+        row.addEventListener('click', (ev) => {
+          if (ev.target !== input) {
+            input.checked = !input.checked;
+            // Manually trigger update
+            const n = input.getAttribute('data-name');
+            if (input.checked) selectedClients.add(n);
+            else selectedClients.delete(n);
+            updateSelectedClientsInputLabel();
+            rankingPage = 1;
+            renderDashboard();
+          }
+        });
+
+        listEl.appendChild(row);
+      });
+    }
+
+    function modalSelectAll() {
+      const listEl = document.getElementById('modalClientList');
+      if (!listEl) return;
+      const inputs = listEl.querySelectorAll('input[type="checkbox"]');
+      inputs.forEach(inp => {
+        inp.checked = true;
+        const n = inp.getAttribute('data-name');
+        if (n) selectedClients.add(n);
+      });
+      rankingPage = 1;
+      renderDashboard();
+    }
+
+    function modalClearAll() {
+      const listEl = document.getElementById('modalClientList');
+      if (!listEl) return;
+      const inputs = listEl.querySelectorAll('input[type="checkbox"]');
+      inputs.forEach(inp => {
+        inp.checked = false;
+        const n = inp.getAttribute('data-name');
+        if (n) selectedClients.delete(n);
+      });
+      rankingPage = 1;
+      renderDashboard();
+    }
+
+    // Attach listener to modal search
+    document.addEventListener('DOMContentLoaded', () => {
+      const ms = document.getElementById('modalClientSearch');
+      if (ms) {
+        ms.addEventListener('input', () => {
+          renderSelectModalList();
+        });
+      }
+    });
   </script>
+
+
+  <!-- Client Selection Modal HTML -->
+  <div class="plano-acao-overlay" id="clientSelectModal" style="z-index: 20050;">
+    <div class="plano-acao-box"
+      style="width: 600px; max-width: 90%; display:flex; flex-direction:column; max-height: 85vh;">
+      <button class="plano-acao-close" onclick="closeSelectModal()">×</button>
+      <h3 id="selectModalTitle" style="margin-top:0;">Selecionar Clientes</h3>
+
+      <div style="margin-bottom: 12px; position:relative;">
+        <i class="fas fa-search"
+          style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#aaa;"></i>
+        <input type="text" id="modalClientSearch" class="search-input" placeholder="Buscar na lista..."
+          style="width: 100%; padding-left:36px;">
+      </div>
+
+      <div style="display:flex; gap: 8px; margin-bottom: 12px; flex-wrap:wrap;">
+        <button class="btn" style="flex:1; font-size:0.9rem;" onclick="modalSelectAll()">Marcar Todos
+          (Visíveis)</button>
+        <button class="btn" style="flex:1; font-size:0.9rem; background:#fff; border:1px solid #ddd;"
+          onclick="modalClearAll()">Desmarcar Todos</button>
+      </div>
+
+      <div id="modalClientList"
+        style="flex:1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right:4px; min-height:200px;">
+        <!-- Items will be injected here -->
+      </div>
+
+      <div class="plano-acao-trigger" style="margin-top:16px; border-top:1px solid #eee; padding-top:16px;">
+        <button id="selectModalBtn" class="btn btn-primary" onclick="closeSelectModal()"
+          style="width:100%;">Concluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Comparison Modal -->
+  <div class="plano-acao-overlay" id="clientCompareModal"
+    style="z-index: 20060; backdrop-filter: blur(5px); background: rgba(0,0,0,0.5);">
+    <div class="plano-acao-box"
+      style="width: 100%; max-width: 900px; height: auto; max-height:85vh; display:flex; flex-direction:column; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 24px; animation: modalSlideIn 0.3s ease-out;">
+
+      <div
+        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
+        <h3 style="margin:0; font-size:1.4rem; font-weight:800; color:#333; letter-spacing:-0.5px;">Comparativo de
+          Clientes</h3>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="position:relative;">
+            <select id="compareModalMonth"
+              style="appearance:none; padding:8px 32px 8px 12px; border-radius:8px; border:1px solid #e1e4e8; font-size:14px; background:#fff; font-weight:600; color:#555; cursor:pointer;"
+              onchange="renderCompareCharts()">
+              <option value="all">Todo o Período</option>
+            </select>
+            <i class="fas fa-chevron-down"
+              style="position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none; font-size:12px;"></i>
+          </div>
+          <button class="plano-acao-close" style="position:static; margin:0;" onclick="closeCompareModal()">×</button>
+        </div>
+      </div>
+
+      <div id="compareChartsArea" style="flex:1; overflow-y:auto; padding-right:4px;">
+        <!-- Charts injected by JS -->
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
